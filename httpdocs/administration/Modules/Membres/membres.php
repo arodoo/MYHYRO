@@ -128,9 +128,68 @@ if (
           dataType: "html",
           success: function(res) {
             $("#liste-compte-membre").html(res);
+            
+            // Initialize DataTables properly after AJAX content loads
+            initializeMembersDataTable();
           }
         });
       }
+      
+      // Separate function to initialize DataTable - follows single responsibility principle
+      function initializeMembersDataTable() {
+        // Prevent duplicate initialization
+        if ($.fn.DataTable.isDataTable('.sa-datatables-init')) {
+          $('.sa-datatables-init').DataTable().destroy();
+        }
+        
+        // Define clean template structure for consistent layout
+        const template = 
+          '<"sa-datatables"' +
+            '<"sa-datatables__table"t>' +
+            '<"sa-datatables__footer"' +
+              '<"sa-datatables__pagination"p>' +
+              '<"sa-datatables__controls"' +
+                '<"sa-datatables__legend"i>' +
+                '<"sa-datatables__divider">' +
+                '<"sa-datatables__page-size"l>' +
+              '>' +
+            '>' +
+          '>';
+        
+        // Initialize with clean options
+        $('.sa-datatables-init').each(function() {
+          const table = $(this).DataTable({
+            dom: template,
+            paging: true,
+            ordering: true,
+            info: true,
+            language: {
+              search: "",
+              searchPlaceholder: "Search...",
+              lengthMenu: "Show _MENU_ entries",
+              info: "Showing _START_ to _END_ of _TOTAL_ entries"
+            },
+            // Apply proper styles to pagination for consistency
+            drawCallback: function() {
+              $(this.api().table().container()).find('.pagination').addClass('pagination-sm');
+            }
+          });
+          
+          // Connect search input using data attribute for clean, declarative approach
+          const searchSelector = $(this).data('sa-search-input');
+          if (searchSelector) {
+            $(searchSelector).off('input').on('input', function() {
+              table.search(this.value).draw();
+            });
+            
+            // Prevent form submission on enter in search field
+            $(searchSelector).off('keypress.prevent-form-submit').on('keypress.prevent-form-submit', function(e) {
+              return e.which !== 13;
+            });
+          }
+        });
+      }
+      
       listeCompteMembre();
 
       //AJAX - COMMENTAIRE LOG
