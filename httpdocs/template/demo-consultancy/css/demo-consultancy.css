@@ -1,0 +1,23 @@
+
+
+.overlap_box {
+	margin-top: -50px;
+	position: relative;
+	z-index: 9;
+}
+
+@media only screen and (min-width: 767px) and (max-width: 991px) {
+
+}
+
+@media only screen and (max-width: 1199px) {
+
+}
+@media only screen and (max-width: 991px) {
+
+}
+@media only screen and (max-width: 480px) {
+.overlap_box {
+	margin-top: 30px;
+}
+}

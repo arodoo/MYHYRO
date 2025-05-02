@@ -1,0 +1,101 @@
+@font-face {
+    font-family: 'syabab-brush';
+    src: url('../fonts/syabab-brush-script.eot') format('embedded-opentype'), 
+	url('../fonts/syabab-brush-script.woff') format('woff'),
+	url('../fonts/syabab-brush-script.woff2') format('woff2'),
+	url('../fonts/syabab-brush-script.ttf') format('truetype'),
+	url('../fonts/syabab-brush-script.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+	color: #878787;
+}
+h1, h2, h3, h4, h5, h6 {
+	color: #000000;
+}
+p {
+	color: #878787;
+}
+.banner_content h2 {
+	font-family: 'syabab-brush';
+}
+.pattern_banner_bottom::after {
+	background-image: url(../../assets/images/pattern2.png);
+	background-repeat: repeat-x;
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 9;
+	height: 27px;
+}
+.pattern1 {
+	position: absolute;
+	bottom: 0;
+	max-width: 200px;
+	right: 0;
+	z-index: -1;
+}
+.pattern2 {
+	position: absolute;
+	bottom: 0;
+	max-width: 300px;
+	right: 0;
+	z-index: -1;
+}
+.pattern3 {
+	position: absolute;
+	top: -50px;
+	max-width: 320px;
+	left: 0;
+	z-index: 10;
+}
+.footer_pattern {
+	background-image: url('../images/pattern_shape.png');
+	background-repeat: repeat-x;
+}
+
+@media only screen and (min-width: 991px) and (max-width: 1199px) {
+}
+@media only screen and (max-width: 1199px) {
+.pattern1 {
+	max-width: 140px;
+}
+}
+@media only screen and (max-width: 991px) {
+.pattern3,
+.pattern2 {
+	max-width: 200px;
+}
+}
+@media only screen and (max-width: 767px) {
+.pattern3 {
+	top: -40px;
+	max-width: 150px;
+}
+.pattern3 {
+	max-width: 160px;
+}
+}
+@media only screen and (max-width: 575px) {
+}
+@media only screen and (max-width: 480px) {
+.pattern1 {
+	max-width: 80px;
+}
+.pattern3 {
+	top: -20px;
+	max-width: 100px;
+}
+.pattern3 {
+	max-width: 120px;
+}
+}
+@media only screen and (max-width: 380px) {
+.pattern3 {
+	max-width: 80px;
+}
+}

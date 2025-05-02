@@ -1,0 +1,132 @@
+
+h1,h2,h3,h4,h5,h6 {
+	font-family: 'Mali', cursive;
+	line-height: normal;
+}
+.shape_wrap [class*="shape"] {
+	position: absolute;
+	z-index: -1;
+}
+.shape1 {
+  right: 20px;
+  bottom: 20px;
+  max-width: 200px;
+  z-index: 2 !important;
+}
+.shape2 {
+  left: 0;
+  bottom: 0;
+  max-width: 40px;
+}
+.shape3 {
+	left: 0;
+	top: 50px;
+	max-width: 93px;
+}
+.shape4 {
+	top: 50px;
+	right: 7%;
+	max-width: 76px;
+}
+.shape5 {
+	bottom: 0;
+	left: -5%;
+	max-width: 300px;
+}
+.shape6 {
+	right: -20px;
+	top: 0;
+	max-width: 148px;
+}
+.shape7 {
+	bottom: 0;
+	right: 0;
+	max-width: 200px;
+}
+.shape8 {
+	left: 0;
+	bottom: 0;
+	max-width: 305px;
+}
+.appointment_form {
+	background-color: #fff;
+	padding: 30px;
+}
+.shape9 {
+	right: -20px;
+	bottom: -10px;
+	max-width: 280px;
+}
+
+@media only screen and (min-width: 991px) and (max-width: 1199px) {
+}
+
+@media only screen and (max-width: 1199px) {
+.shape3 {
+	left: -20px;
+	top: 20px;
+	max-width: 90px;
+}
+.shape8,
+.shape9 {
+	max-width: 200px;
+}
+}
+@media only screen and (max-width: 991px) {
+.shape5 {
+	max-width: 200px;
+}
+.shape7 {
+	max-width: 150px;
+}
+.shape8, .shape9 {
+	max-width: 170px;
+}
+}
+@media only screen and (max-width: 767px) {
+.shape5 {
+	max-width: 150px;
+}
+.shape6 {
+	max-width: 100px;
+}
+.shape7 {
+	max-width: 120px;
+}
+.shape8, .shape9 {
+	max-width: 130px;
+}
+}
+@media only screen and (max-width: 575px) {
+.shape3 {
+	top: 0px;
+	max-width: 60px;
+}
+.shape4 {
+	top: 30px;
+}
+.shape5 {
+	max-width: 100px;
+}
+.shape8, .shape9 {
+	max-width: 70px;
+}
+}
+@media only screen and (max-width: 480px) {
+.shape1 {
+	bottom: 0px;
+	max-width: 100px;
+}
+.shape2 {
+	display: none !important;
+}
+.shape5 {
+	max-width: 80px;
+}
+.shape6 {
+	max-width: 70px;
+}
+.shape7 {
+	max-width: 80px;
+}
+}

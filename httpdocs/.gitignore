@@ -1,0 +1,105 @@
+# Configuration and sensitive files
+Configurations_bdd.php
+*.config.php
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+excecute.php
+execute2.php
+httpdocs/Configurations.php
+
+httpdocs/Configurations_modules.php
+httpdocs/Configurations_bdd.php
+
+Configurations_bdd.php
+Configurations.php
+Configurations_modules.php
+httpdocs/function/
+
+
+httpdocs\phpmyadmin
+httpdocs\administration\vendor
+*.sql
+
+*.vendor
+
+# Database files
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+
+# Credentials and secrets
+*credentials*
+*secret*
+*key*
+*password*
+*token*
+.htpasswd
+
+# Log files
+*.log
+logs/
+error_logs/
+
+# Cache and temporary files
+cache/
+.tmp/
+temp/
+tmp/
+.sass-cache/
+
+# Vendor directories
+vendor/
+node_modules/
+bower_components/
+httpdocs/vendor/
+httpdocs/administration/vendor/
+httpdocs/phpmyadmin/
+httpdocs/phpmyadmin/vendor/
+
+
+# User uploads
+uploads/
+media/
+userfiles/
+httpdocs/uploads/
+httpdocs/media/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-*
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+*.pyo
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Session files
+*/sessions/
+sessions/

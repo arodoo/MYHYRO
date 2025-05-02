@@ -1,0 +1,120 @@
+
+.classis_box {
+	position: relative;
+	margin-top: 30px;
+}
+.classis_box_content,
+.trainer_title {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	padding: 10px;
+	z-index: 9;
+}
+.box_img img {
+	width: 100%;
+}
+.trainer-image {
+	position: relative;
+}
+.classis_box::before,
+.trainer-image:before {
+	background: -moz-linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.0) 100%); /* ff3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0.0)), color-stop(100%, rgba(0,0,0,0.7))); /* safari4+,chrome */
+    background: -webkit-linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.0) 100%); /* safari5.1+,chrome10+ */
+    background: -o-linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.0) 100%); /* opera 11.10+ */
+    background: -ms-linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.0) 100%); /* ie10+ */
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.0) 100%); /* w3c */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#000000',GradientType=0 ); /* ie6-9 */ 
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+	z-index: 0;
+}
+.classis_box:hover:before {
+	background: -moz-linear-gradient(90deg, rgba(16,131,200,1) 0%, rgba(255,255,255,0.06) 100%); /* ff3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0.06)), color-stop(100%, rgba(16,131,200,1))); /* safari4+,chrome */
+    background: -webkit-linear-gradient(90deg, rgba(16,131,200,1) 0%, rgba(255,255,255,0.06) 100%); /* safari5.1+,chrome10+ */
+    background: -o-linear-gradient(90deg, rgba(16,131,200,1) 0%, rgba(255,255,255,0.06) 100%); /* opera 11.10+ */
+    background: -ms-linear-gradient(90deg, rgba(16,131,200,1) 0%, rgba(255,255,255,0.06) 100%); /* ie10+ */
+    background: linear-gradient(0deg, rgba(16,131,200,1) 0%, rgba(255,255,255,0.06) 100%); /* w3c */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#1083c8',GradientType=0 ); /* ie6-9 */ 
+}
+.schedule_table {
+	margin-top: 20px;
+}
+.schedule_table thead th {
+	color: #292b2c;
+}
+.schedule_table tbody td {
+	padding: 20px 5px;
+}
+.tab-content .schedule_table tbody p {
+	margin-top: 5px;
+}
+.trainer_title {
+	text-align: center;
+}
+.trainer_title * {
+	color: #fff;
+	text-transform: capitalize;
+}
+.trainer_title h4 {
+	position: relative;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+}
+.trainer_title h4:before {
+	background-color: #fff;
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0 auto;
+	width: 30px;
+	height: 2px;
+}
+.contact_info.trainer_info li span, .contact_info.trainer_info li span + * {
+	font-size: 16px;
+}
+.trainer_info.contact_info li span {
+	max-width: 80px;
+	margin-top: 2px;
+	float: left;
+	width: 100%;
+	margin-top: 0;
+}
+.contact_info.trainer_info li span + * {
+	display: block;
+	max-width: none;
+}
+.contact_info.trainer_info > li {
+	padding-top: 5px;
+}
+.gym_contact .contact_info > li {
+	margin-top: 20px;
+}
+.gym_contact .contact_info li:first-child {
+	margin-top: 0;
+}
+
+@media only screen and (min-width: 767px) and (max-width: 991px) {
+
+}
+
+@media only screen and (max-width: 1199px) {
+
+}
+@media only screen and (max-width: 991px) {
+.schedule_table.table-responsive > table {
+	width: 900px;
+}
+}
+@media only screen and (max-width: 767px) {
+
+}

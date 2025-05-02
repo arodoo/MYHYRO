@@ -1,0 +1,186 @@
+RewriteEngine On
+#Options +FollowSymlinks
+ServerSignature Off
+
+#AuthName "Page protégée, veuillez vous identifier"
+#AuthType Basic
+#AuthUserFile "/var/www/vhosts/my-hyro.com/httpdocs/.htpasswd"
+#Require valid-user
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-FRAME-OPTIONS "SAMEORIGIN"
+Header always set X-XSS-Protection "1; mode=block"
+Header edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+Header set Set-Cookie HttpOnly;Secure
+
+# Serve brotli compressed CSS files if they exist and the client accepts gzip.
+RewriteCond %{HTTP:Accept-encoding} br
+RewriteCond %{REQUEST_FILENAME}\.br -s
+RewriteRule ^(.*)\.css $1\.css\.br [QSA]
+
+#Serve gzip compressed CSS files if they exist and the client accepts gzip.
+RewriteCond %{HTTP:Accept-encoding} gzip
+RewriteCond %{REQUEST_FILENAME}\.gz -s
+RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
+
+# Serve brotli compressed JS files if they exist and the client accepts gzip.
+RewriteCond %{HTTP:Accept-encoding} br
+RewriteCond %{REQUEST_FILENAME}\.br -s
+RewriteRule ^(.*)\.js $1\.js\.br [QSA]
+
+# Serve gzip compressed JS files if they exist and the client accepts gzip.
+RewriteCond %{HTTP:Accept-encoding} gzip
+RewriteCond %{REQUEST_FILENAME}\.gz -s
+RewriteRule ^(.*)\.js $1\.js\.gz [QSA]
+
+# Serve correct content types, and prevent mod_deflate double gzip.
+RewriteRule \.css\.gz$ - [T=text/css,E=no-gzip:1]
+RewriteRule \.js\.gz$ - [T=text/javascript,E=no-gzip:1]
+
+  <FilesMatch "(\.js\.gz|\.css\.gz)$">
+    # Serve correct encoding type.
+    Header set Content-Encoding gzip
+    # Force proxies to cache gzipped & non-gzipped css/js files separately.
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+  <FilesMatch "(\.js\.br|\.css\.br)$">
+    # Serve correct encoding type.
+    Header set Content-Encoding br
+    # Force proxies to cache gzipped & non-gzipped css/js files separately.
+    Header append Vary Accept-Encoding
+  </FilesMatch>
+
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/plain
+AddOutputFilterByType DEFLATE text/html
+AddOutputFilterByType DEFLATE text/xml
+AddOutputFilterByType DEFLATE text/shtml
+AddOutputFilterByType DEFLATE text/css
+AddOutputFilterByType DEFLATE application/xml
+AddOutputFilterByType DEFLATE application/xhtml+xml
+AddOutputFilterByType DEFLATE application/rss+xml
+AddOutputFilterByType DEFLATE application/javascript
+AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule> 
+
+#404
+ErrorDocument 404 /page-introuvable-404.html
+RewriteRule ^page-introuvable-404\.html$  /?page=page-introuvable-404 [L]
+
+RewriteRule ^1Tfgdfg359g4h6546541Jkk45t8lNJk24861235486s$ /?a=admin [L]
+RewriteRule ^Identification$ /?a=login [L]
+RewriteRule ^Inscription$ /?a=inscription [L]
+RewriteRule ^Mot-de-passe$ /?a=Mot-de-passe [L]
+RewriteRule ^Compte-debloque/([a-z-A-Z0-9]+)$ /?a=Compte-debloque&idaction=$1 [L]
+
+#génériques
+RewriteRule ^robots\.txt$  /robots.php [L]
+RewriteRule ^index\.html$  /index.php [L]
+RewriteRule ^sitemap\.xml$  /sitemap.php [L]
+
+#################### PAGES #################### 
+
+RewriteRule ^Contact$  /?page=Contact [L]
+
+RewriteRule ^Gestion-de-votre-compte\.html$  /?page=Compte-modifications [L]
+RewriteRule ^Inscription-confirmation-([a-zA-Z-0-9]+)\.html$ /?page=inscription-confirmation&action=confirmation&nbrid=$1 [L]
+RewriteRule ^Confirmation-mail-([a-zA-Z-0-9]+)\.html$ /?page=Confirmation-mail&action=mail&nbrid=$1 [L]
+
+RewriteRule ^Abonnement-lettre-information\.html$ /?page=Abonnement-lettre-information [L]
+RewriteRule ^Desabonnement-lettre-information-([a-zA-Z-0-9]+)\.html$ /?page=Desabonnement-lettre-information&action=delete&crypt=$1 [L]
+
+RewriteRule ^Notifications$  /index.php?page=Notifications [L]
+RewriteRule ^Notifications/([a-zA-Z-0-9]+)$  /index.php?page=Notifications&action=$1 [L]
+RewriteRule ^Notifications/([a-zA-Z-0-9]+)/([0-9]+)$  /index.php?page=Notifications&action=$1&idaction=$2 [L]
+
+RewriteRule ^Mot-de-passe-perdu-([a-zA-Z-0-9]+)/(.+)\.html$ /?mot-de-passe-perdu&action_password=modif&idverif=$1&mail=$2 [L]
+
+RewriteRule ^supprimer-mon-compte\.html$  /?action=supprimer-compte [L]
+
+RewriteRule ^Blog$  /?page=blog [L]
+RewriteRule ^Blog/([0-9]+)$  /?page=blog&n=$1 [L]
+RewriteRule ^Blog/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=blog&fiche=$1&idaction=$2 [L]
+RewriteRule ^Blog/Categorie/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=blog&action=Categorie&name=$1&idaction=$2 [L]
+RewriteRule ^Blog/Categorie/([a-zA-Z-0-9]+)/([0-9]+)/([0-9]+)$  /?page=blog&action=Categorie&name=$1&idaction=$2&n=$3 [L]
+
+RewriteRule ^Avis$ /?page=Avis [L]
+RewriteRule ^Avis/([a-zA-Z-0-9]+)$ /?page=Avis&action=$1 [L]
+RewriteRule ^Avis/valider/(.+)$  /?page=Avis&action=valider&idaction=$1 [L]
+RewriteRule ^Avis/desactiver/(.+)$  /?page=Avis&action=desactiver&idaction=$1 [L]
+
+RewriteRule ^Boutique$  /?page=Boutique [L]
+RewriteRule ^Boutique/([a-zA-Z-0-9]+)$  /?page=Boutique&action=$1 [L]
+RewriteRule ^Boutique/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Boutique&action=$1&idaction=$2 [L]
+
+RewriteRule ^Boutique-fiche$  /?page=Boutique-fiche [L]
+RewriteRule ^Boutique-fiche/([a-zA-Z-0-9]+)$  /?page=Boutique-fiche&action=$1 [L]
+RewriteRule ^Boutique-fiche/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Boutique-fiche&action=$1&idaction=$2 [L]
+
+RewriteRule ^Sites-d-achats-recommandes$  /?page=Sites-d-achats-recommandes [L]
+RewriteRule ^Sites-d-achats-recommandes/([a-zA-Z-0-9]+)$  /?page=Sites-d-achats-recommandes&action=$1 [L]
+RewriteRule ^Sites-d-achats-recommandes/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Sites-d-achats-recommandes&action=$1&idaction=$2 [L]
+
+RewriteRule ^Passage-de-commande$ /?page=Passage-de-commande [L]
+RewriteRule ^Recapitulatif$ /?page=Recapitulatif [L]
+
+RewriteRule ^Mes-commandes$  /?page=Mes-commandes [L]
+RewriteRule ^Mes-commandes/([a-zA-Z-0-9]+)$  /?page=Mes-commandes&action=$1 [L]
+RewriteRule ^Mes-commandes/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Mes-commandes&action=$1&idaction=$2 [L]
+
+RewriteRule ^Mon-abonnement$  /?page=Mon-abonnement [L]
+RewriteRule ^Mon-abonnement/([a-zA-Z-0-9]+)$  /?page=Mon-abonnement&action=$1 [L]
+RewriteRule ^Mon-abonnement/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Mon-abonnement&action=$1&idaction=$2 [L]
+
+RewriteRule ^Mes-listes-de-souhaits$  /?page=Mes-listes-de-souhaits [L]
+RewriteRule ^Mes-listes-de-souhaits/([a-zA-Z-0-9]+)$  /?page=Mes-listes-de-souhaits&action=$1 [L]
+RewriteRule ^Mes-listes-de-souhaits/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Mes-listes-de-souhaits&action=$1&idaction=$2 [L]
+
+RewriteRule ^Mes-produits$  /?page=Mes-produits [L]
+
+RewriteRule ^Passage-de-colis$  /?page=Passage-de-colis [L]
+
+RewriteRule ^Mes-colis$  /?page=Mes-colis [L]
+
+RewriteRule ^Avatar$  /?page=Avatar [L]
+RewriteRule ^Avatar/([a-zA-Z-0-9]+)$  /?page=Avatar&action=$1 [L]
+RewriteRule ^Avatar/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Avatar&action=$1&idaction=$2 [L]
+
+RewriteRule ^Abonnements$ /?page=Abonnements [L]
+
+RewriteRule ^Recherche$ /?page=Recherche [L]
+
+RewriteRule ^Factures$ /?page=factures [L]
+RewriteRule ^Factures/([0-9]+)$  /?page=factures&n=$1 [L]
+
+RewriteRule ^facture/([a-zA-Z-0-9]+)/(.+)$  /panel/Facturations/facture-client-pdf.php?idaction=$1&action=$2 [L]
+RewriteRule ^factures-liste\.html$  /panel/Facturations/factures-client-liste-pdf.php [L]
+
+RewriteRule ^Messagerie$ /?page=Messagerie [L]
+RewriteRule ^Messagerie/([0-9]+)$  /?page=Messagerie&n=$1 [L]
+RewriteRule ^Messagerie/([a-zA-Z-0-9]+)$  /?page=Messagerie&action=$1 [L]
+RewriteRule ^Message/([a-zA-Z-0-9]+)/([a-zA-Z-0-9]+)$  /?page=Message&action=$1&idaction=$2 [L]
+RewriteRule ^Message/([a-zA-Z-0-9]+)/([a-zA-Z-0-9]+)/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Message&action=$1&idaction=$2&actionn=$3&idactionn=$4 [L]
+
+RewriteRule ^Photos$  /?page=modifier-profil-photo [L]
+RewriteRule ^Photos/([a-zA-Z-0-9]+)/([a-zA-Z-0-9]+)$  /?page=modifier-profil-photo&action=$1&actionn=$2 [L]
+RewriteRule ^Photos/([a-zA-Z-0-9]+)/([a-zA-Z-0-9]+)$  /?page=modifier-profil-photo&action=$1&upload_et_recadrage_ok=$2 [L]
+
+RewriteRule ^Paiement$  /?page=Panier [L]
+RewriteRule ^Recapitulatif-Panier$  /?page=Panier [L]
+RewriteRule ^Paiement-2$  /?page=Panier2 [L]
+RewriteRule ^Paiement/traitement-paiement/([0-9]+)/([0-9]+)$  /?page=Traitement-Paiement&numero_panier=$1&transactionId=$2 [L]
+RewriteRule ^Paiement/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Panier&type_paiement=$1&idaction=$2 [L]
+RewriteRule ^Recapitulatif-Panier/([a-zA-Z-0-9]+)/([0-9]+)$  /?page=Panier&type_paiement=$1&idaction=$2 [L]
+
+RewriteRule ^Traitements-informations$ /?page=Traitements-informations [L]
+RewriteRule ^Traitements-admin$ /?page=Traitements-admin [L]
+RewriteRule ^Traitements-especes$ /?page=Traitements-especes [L]
+RewriteRule ^Traitements-cheque$ /?page=Traitements-cheque [L]
+RewriteRule ^Traitements-mangopay$ /?page=Traitements-mangopay [L]
+
+RewriteRule ^Traitements-gratuit$ /?page=Traitements-gratuit [L]
+
+RewriteRule ^([a-zA-Z-0-9]+)$  /?page=page-dynamique&namepage=$1 [L]

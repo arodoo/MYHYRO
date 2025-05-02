@@ -1,0 +1,84 @@
+body {
+	color: #7F8096;
+}
+body,h1, h2, h3, h4, h5, h6 {
+	font-family: 'Poppins', sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+	color: #252740;
+}
+p {
+	color: #7F8096;
+}
+.btn-success {
+	color: #fff;
+	background-color: #00AC9F;
+	border-color: #00AC9F;
+}
+.btn-success:hover,
+.btn-success:not(:disabled):not(.disabled).active, 
+.btn-success:not(:disabled):not(.disabled):active, 
+.show > .btn-success.dropdown-toggle {
+	color: #fff;
+	background-color: #009C8F;
+	border-color: #009C8F;
+}
+.btn-success.btn_box_shadow:hover, .btn-success.btn_box_shadow:focus, .btn-success.btn_box_shadow.active:focus, .btn-success.btn_box_shadow:active:focus,
+.btn-outline-success.btn_box_shadow:hover,.btn-outline-success.btn_box_shadow:focus,.btn-outline-success.btn_box_shadow.active:focus,.btn-outline-success.btn_box_shadow:active:focus {
+	box-shadow: 0 0 15px #009C8F !important;
+}
+.btn-outline-success {
+	color: #00AC9F;
+	border-color: #00AC9F;
+}
+.btn-outline-success:hover,
+.btn-outline-success:not(:disabled):not(.disabled).active,
+.btn-outline-success:not(:disabled):not(.disabled):active, 
+.show > .btn-outline-success.dropdown-toggle  {
+	color: #fff;
+	background-color: #009C8F;
+	border-color: #009C8F;
+}
+.wave_shape_bottom {
+	background-image: url(../images/banner_shape.png);
+	background-position: bottom center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.wave_shape_top {
+	background-image: url(../images/wave_shape.png);
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.wave_shape_top2 {
+	background-image: url(../images/wave_shape2.png);
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.wave_shape_top3 {
+	background-image: url(../images/wave_shape3.png);
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.dashboard_img img {
+	width: 100%;
+}
+
+
+
+@media only screen and (min-width: 991px) and (max-width: 1199px) {
+}
+@media only screen and (max-width: 1199px) {
+}
+@media only screen and (max-width: 767px) {
+}
+@media only screen and (max-width: 575px) {
+}
+@media only screen and (max-width: 480px) {
+}
+@media only screen and (max-width: 380px) {
+
+}

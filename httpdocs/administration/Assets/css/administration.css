@@ -1,0 +1,17 @@
+a{
+text-decoration : none;
+color: black;
+}
+
+.section_module_accueil_administrateur{
+text-align: center;
+}
+
+#accordion h3{
+text-align: left;
+}
+
+.col-admin-accueil{
+margin-bottom: 15px;
+}
+

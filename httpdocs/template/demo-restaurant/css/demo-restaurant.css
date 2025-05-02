@@ -1,0 +1,176 @@
+
+.banner_location_wrap {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -50px;
+	z-index: 9;
+}
+.call_border {
+	border-left: 1px solid #dee2e6;
+}
+.call_wrap {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-align: center;
+	align-items: center;
+}
+.call_icon {
+	margin-right: 10px;
+}
+.call_icon i {
+	font-size: 30px;
+	color: #222;
+}
+.overlap_img1 {
+	position: absolute;
+	right: 20px;
+	z-index: 2;
+	bottom: -100px;
+	max-width: 300px;
+}
+.overlap_img2 {
+	position: absolute;
+	left: -20px;
+	z-index: 2;
+	bottom: -150px;
+	max-width: 200px;
+}
+.single_menu_product {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-align: center;
+	align-items: center;
+	background-color: #2A2E33;
+	padding: 25px;
+	margin-top: 30px;
+	position: relative;
+	z-index: 0;
+}
+.single_menu_product::before {
+	content: "";
+	position: ;
+	position: absolute;
+	left: 10px;
+	right: 10px;
+	top: 10px;
+	bottom: 10px;
+	border-left: 1px dashed rgba(255,255,255,0.9);
+	border-right: 1px dashed rgba(255,255,255,0.9);
+	border-top: 1px dashed rgba(255,255,255,0.9);
+	border-bottom: 1px dashed rgba(255,255,255,0.9);
+	z-index: -1;
+}
+.menu_product_info {
+	width: 100%;
+}
+.menu_product_img {
+	margin-right: 10px;
+}
+.menu_product_img img {
+	max-width: 120px;
+	border-radius: 100%;
+}
+.menu_title * {
+	font-size: 18px;
+	margin: 0;
+	text-transform: capitalize;
+}
+.menu_title_price {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+	-ms-flex-align: center;
+	align-items: center;
+	margin-bottom: 10px;
+}
+.menu_price span {
+	color: #0E93D8;
+	font-size: 20px;
+	font-weight: 500;
+}
+.wotking_hours p {
+	margin-bottom: 10px;
+	line-height: 25px;
+	text-transform: capitalize;
+}
+.wotking_hours span {
+	margin-right: 10px;
+	float: left;
+}
+.chef_info {
+	display: inline-block;
+	width: 100%;
+	padding-top: 5px;
+}
+.chef_info a {
+	color: #888888;
+}
+.chef-image img {
+	width: 100%;
+}
+.chef_info span {
+	color: #333;
+	display: block;
+	margin-bottom: 10px;
+}
+.chef_info > li {
+	float: left;
+	width: 50%;
+}
+
+@media only screen and (min-width: 767px) and (max-width: 991px) {
+.call_wrap {
+	display: block;
+}
+}
+
+@media only screen and (max-width: 1199px) {
+.banner_location_wrap .small_padding {
+	padding: 15px;
+}
+.banner_location_wrap {
+	bottom: -40px;
+}
+}
+@media only screen and (max-width: 991px) {
+.overlap_img1 {
+	bottom: -70px;
+	max-width: 200px;
+}
+.overlap_img2 {
+	bottom: -120px;
+	max-width: 180px;
+}
+}
+@media only screen and (max-width: 767px) {
+.banner_location_wrap {
+	position: static;
+}
+.banner_location_wrap .radius_lb_10 {
+	border-radius: 10px 10px 0 0;
+}
+.banner_location_wrap .radius_rb_10 {
+	border-radius: 0 0px 10px 10px;
+}
+.call_wrap  {
+	-ms-flex-pack: center;
+	justify-content: center;
+}
+.call_border {
+	border-left: 0;
+	border-top: 1px solid #dee2e6;
+}
+.overlap_img1 {
+	bottom: -30px;
+	max-width: 100px;
+}
+.overlap_img2 {
+	bottom: -60px;
+	max-width: 80px;
+}
+.single_menu_product {
+	margin-top: 15px;
+}
+}

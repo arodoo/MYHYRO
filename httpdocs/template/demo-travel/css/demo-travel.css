@@ -1,0 +1,135 @@
+body {
+	font-family: 'Poppins', sans-serif;
+	font-size: 14px;
+	line-height: normal;
+	letter-spacing: 0.3px;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-family: 'K2D', sans-serif;
+}
+.tour_box {
+	box-shadow: 0 0 25px rgba(0,0,0,0.1);
+	border-radius: 10px;
+	margin-top: 30px;
+}
+.tour_info {
+	padding: 15px;
+	background-color: #fff;
+	border-radius: 0 0 10px 10px;
+}
+.tour_img {
+	position: relative;
+	border-radius: 10px 10px 0 0;
+}
+.tour_img img {
+	border-radius: 10px 10px 0 0;
+	width: 100%;
+}
+.tour_img::before {
+	border-radius: 10px 10px 0 0;
+	background-color: rgba(0,0,0,0.5);
+	content: "";
+	left: 0;
+	right: 0;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	opacity: 0;
+	transition: all 0.5s ease-in-out;
+}
+.tour_box:hover .tour_img::before {
+	opacity: 1;
+}
+.hover_info {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 10%;
+	-moz-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+	opacity: 0;
+	transition: all 0.5s ease-in-out;
+	text-align: center;
+}
+.tour_box:hover .hover_info {
+	opacity: 1;
+	top: 50%;
+}
+.tour_foot {
+	border-top: 1px solid #ddd;
+	padding-top: 10px;
+	display: inline-block;
+	width: 100%;
+}
+.tour_price h4 {
+	display: block;
+	font-weight: bold;
+	font-size: 24px;
+}
+.tour_stars {
+	float: right;
+	text-align: center;
+}
+.stars {
+	margin-top: 5px;
+}
+.stars i {
+	color: #ffc300;
+	font-size: 18px;
+}
+.tour_price {
+	float: left;
+	width: 60%;
+}
+
+
+@media only screen and (min-width: 767px) and (max-width: 991px) {
+.tour_price h4 {
+	font-size: 18px;
+	margin-bottom: 0; 
+}
+.tour_price span,
+.tour_stars {
+	font-size: 12px;
+}
+.stars i {
+	font-size: 14px;
+}
+.tour_info {
+	padding: 10px;
+}
+.tour_price {
+	width: 55%;
+}
+.stars {
+	margin-top: 0;
+}
+}
+
+@media only screen and (max-width: 767px) {
+.tour_price h4 {
+	font-size: 20px;
+}
+.tour_price span,
+.tour_stars {
+	font-size: 14px;
+}
+
+.tour_info {
+	padding: 10px;
+}
+.tour_price {
+	width: 55%;
+}
+.stars {
+	margin-top: 0;
+}
+
+}
+@media only screen and (max-width: 991px) {
+
+}
+@media only screen and (max-width: 480px) {
+
+}

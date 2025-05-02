@@ -1,0 +1,21 @@
+#DOCUMENTATION PAGINATION
+
+#1 - Intégrer dans votre requête sqlà la fin : LIMIT ".(($_GET['n']-1)*$nbrpage).",".$nbrpage." 
+
+#2 - En dessous de votre tableau avec la requête intégré le CALL de la fonction :
+
+pagination("codi_one_blog","$nbrpage","$nomsiteweb/Blog2","Blog2");
+
+#Premier argument : Mettez la table cible
+#Deuxième argument mettre la variable détenant en valeur le nombre de ligne à afficher par page
+#Troisième argument la page d'accueil de votre page cible
+#Quatrième argument la structure de la page (On se sert de cet argument pour intégrer les numéros de pages derrière du type Blog/2)
+
+# (3) Si vous souhaitez changer la pagination mettre au dessus de votre requête sql
+$nbrpage = "3";
+
+
+
+
+
+

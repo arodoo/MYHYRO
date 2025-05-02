@@ -1,0 +1,378 @@
+body {
+	color: #888888;
+	font-family: 'Poppins', sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+	color: #000000;
+	font-family: 'Poppins', sans-serif;
+}
+p {
+	color: #888888;
+}
+.domain_search {
+	box-shadow: 0 0 10px rgba(0,0,0,0.09);
+	position: relative;
+	background-color: rgba(255,255,255,0.2);
+	z-index: 9;
+}
+.domain_search input {
+	border: 0;
+	background-color: transparent;
+	width: 100%;
+	padding: 17px 190px 17px 20px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.domain_search button {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+.domain_search .dropdown {
+	position: absolute;
+	right: 125px;
+	top: 50%;
+	-moz-transform: translatey(-50%);
+	-webkit-transform: translatey(-50%);
+	transform: translatey(-50%);
+	padding-right: 15px;
+}
+.domain_search .dropdown .ddChild {
+	background-color: #fff;
+	width: 206px;
+	height: auto !important;
+	border: 0 !important;
+}
+.domain_search .dropdown .ddChild li {
+    cursor: pointer;
+    line-height: normal;
+	text-align: left;
+    list-style: outside none none;
+    padding: 7px 10px;
+    transition: all 0.3s ease-in-out;
+}
+.domain_search .ddChild ul li .ddlabel {
+	color: #333;
+	transition: all 0.5s ease-in-out;
+}
+.domain_search .dropdown .ddChild li:hover {
+	background-color: #0E93D8;
+	padding: 7px 15px;
+}
+.domain_search .ddChild ul li:hover .ddlabel {
+	color: #fff;
+}
+.domain_search .dropdown .dd.ddcommon {
+	cursor: pointer;
+	padding-right: 10px;
+	position: relative;
+	outline: none;
+}
+.domain_search .dropdown .ddTitleText {
+	padding: 18px 7px 18px 10px;
+	display: inline-block;
+	width: 100%;
+	text-align: right;
+}
+.domain_search .dropdown .ddArrow::before {
+	top: 19px;
+	color: #fff;
+}
+.domain_price {
+	margin-top: 20px;
+}
+.domain_price ul {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+}
+.domain_price li {
+	list-style: none;
+	padding: ;
+	padding-right: 15px;
+	color: #333;
+	text-align: center;
+}
+.domain_price li:last-child {
+	padding-right: 0;
+}
+.domain_price li span {
+	font-size: 20px;
+	font-weight: 500;
+	color: #0E93D8;
+}
+.domain_price_light li {
+	color: #fff;
+}
+.domain_search input::-webkit-input-placeholder {
+	color:#ffffff;
+	opacity:1
+}
+.domain_search input::-moz-placeholder {
+	color:#ffffff;
+	opacity:1
+}
+.domain_search input:-ms-input-placeholder {
+	color:#ffffff;
+	opacity:1
+}
+.domain_search input::-ms-input-placeholder {
+	color:#ffffff;
+	opacity:1
+}
+.domain_search input::placeholder {
+	color:#ffffff;
+	opacity:1
+}
+.affiliate_table table {
+	margin: 0;
+}
+.affiliate_table colgroup {
+	width: 292px;
+}
+.affiliate_table::before {
+	content: "";
+	position: absolute;
+	left: 296px;
+	right: 15px;
+	top: 41px;
+	bottom: 0;
+	box-shadow: 0 0px 20px rgba(0,0,0,0.15);
+	display: inline-block;
+	z-index: -1;
+}
+.affiliate_table thead tr td, .affiliate_table tbody tr td {
+	background-color: #fff;
+	text-align: center;
+	line-height: 30px;
+	padding: 5px 10px;
+	border: 0;
+}
+.affiliate_table thead tr:first-child td, .affiliate_table thead tr:nth-child(2) td:first-child, .affiliate_table tbody tr td:first-child {
+	background-color: rgba(0,0,0,0);
+	text-align: left;
+}
+.affiliate_table thead tr td.populet_txt {
+	text-align: center;
+}
+.affiliate_table colgroup:nth-child(3) {
+	border: 1px solid #0E93D8;
+}
+.affiliate_table thead tr td.populet_txt {
+	text-align: center;
+	color: #fff;
+	background-color: #0E93D8;
+	padding: 5px;
+}
+.circle_list::before {
+	content: "";
+	height: 7px;
+	width: 7px;
+	background-color: #0E93D8;
+	position: absolute;
+	border-radius: 100%;
+	left: 12px;
+	top: 17px;
+}
+.price_list_content {
+	position: relative;
+	padding-left: 30px !important;
+}
+.table_title {
+	font-size: 20px;
+	text-transform: uppercase;
+	font-weight: 600;
+	padding: 20px 20px 10px;
+	display: block;
+}
+.price_title {
+	font-size: 40px;
+	font-weight: bold;
+	padding: 10px 0 20px 0;
+	display: block;
+}
+.pricing_title {
+	margin: 0;
+	font-size: 34px;
+	font-weight: bold;
+}
+.affiliate_table tbody tr td {
+	border-top: 1px solid #ddd;
+}
+.affiliate_table tbody tr td:first-child {
+	border: 0;
+}
+.mbg_img {
+	position: relative;
+	height: 100%;
+	text-align: center;
+}
+.mbg_img img {
+	max-width: 280px;
+	width: 100%;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0 auto;
+}
+.bg_circle span {
+	background-color: rgba(255,255,255,0.2);
+	border-radius: 100%;
+	position: absolute;
+}
+.bg_circle span:first-child {
+	height: 30px;
+	width: 30px;
+	top: 5%;
+	left: 20%;
+}
+.bg_circle span:nth-child(2) {
+	height: 50px;
+	width: 50px;
+	bottom: 8%;
+	left: 10%;
+}
+.bg_circle span:nth-child(3) {
+	height: 60px;
+	width: 60px;
+	right: 8%;
+	top: 10%;
+}
+.bg_circle span:nth-child(4) {
+	height: 40px;
+	width: 40px;
+	right: 5%;
+	bottom: 10%;
+}
+.bg_circle span:nth-child(5) {
+	height: 15px;
+	width: 15px;
+	left: 50%;
+	top: 20%;
+}
+.bg_circle span:nth-child(6) {
+	height: 35px;
+	width: 35px;
+	right: 40%;
+	bottom: 20%;
+}
+.domain_table {
+	background-color: rgba(0,0,0,0.2);
+	margin-top: 30px;
+}
+.domain_table table {
+	margin: 0;
+}
+.domain_table thead th {
+	padding: 20px 15px;
+	font-weight: 600;
+	border: 0 !important;
+}
+.domain_table thead th, .domain_table tbody td {
+	vertical-align: middle;
+	color: #fff;
+	text-align: center;
+	border-top: 1px solid rgba(255,255,255,0.2);
+	border-bottom: 0;
+	white-space: nowrap;
+}
+.domain_table tbody tr:hover {
+	background-color: rgba(0,0,0,0.5);
+}
+.pr_table thead th, .pr_table tbody td {
+	background-color: #fff;
+	vertical-align: middle;
+	text-align: center;
+	border-bottom: 0;
+	white-space: nowrap;
+}
+.pr_table {
+	border-left: 1px solid #dee2e6;
+	border-right: 1px solid #dee2e6;
+	border-bottom: 1px solid #dee2e6;
+	margin-top: 30px;
+	box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.pr_table table {
+	margin: 0;
+}
+.pr_table thead th {
+	font-weight: 600;
+}
+.pr_table tbody tr:hover td {
+	background-color: #f4f4f4;
+}
+
+@media only screen and (min-width: 991px) and (max-width: 1199px) {
+}
+@media only screen and (max-width: 1199px) {
+.pricing_title {
+	font-size: 30px;
+}
+.affiliate_table::before {
+	left: 248px;
+}
+}
+@media only screen and (max-width: 991px) {
+.affiliate_table table {
+	width: 920px;
+}
+.affiliate_table colgroup:first-child {
+	width: 312px;
+}
+}
+@media only screen and (max-width: 767px) {
+.pricing_title {
+	font-size: 26px;
+}
+.mbg_img img {
+	position: relative;
+}
+.bg_circle span:nth-child(5) {
+	left: 30%;
+	top: 35%;
+}
+.bg_circle span:nth-child(6) {
+	right: 30%;
+	bottom: 50%;
+}
+}
+@media only screen and (max-width: 575px) {
+.domain_price li {
+	font-size: 14px;
+}
+.domain_price li span {
+	font-size: 18px;
+}
+.domain_search .dropdown {
+	right: 115px;
+	padding-right: 10px;
+}
+.bg_circle span:nth-child(6) {
+	right: 15%;
+}
+}
+@media only screen and (max-width: 480px) {
+.domain_search .dropdown .ddTitleText {
+	padding: 12px 7px 12px 10px;
+}
+.domain_search input {
+	padding: 13px 190px 13px 20px;
+}
+.domain_search .dropdown .ddArrow::before {
+	top: 14px;
+}
+.domain_search .dropdown .ddChild {
+	width: 176px;
+}
+.domain_search .dropdown {
+	right: 98px;
+}
+}
+@media only screen and (max-width: 380px) {
+.domain_search input {
+	padding: 13px 165px 13px 10px;
+}
+}

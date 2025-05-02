@@ -1,0 +1,77 @@
+
+.appointment_form {
+	border-radius: 10px;
+	background-color: #fff;
+	padding: 30px;
+	margin: 100px 0;
+}
+.doc_why_choose {
+	margin-bottom: 100px;
+}
+.dr-description > a {
+	float: right;
+}
+.doctor_availability li,
+.contact_info.doc_info > li {
+	padding-top: 10px;
+}
+.doctor_availability li span {
+	float: right;
+}
+.contact_info.doc_info li span, .contact_info.doc_info li span + * {
+	font-size: 16px;
+}
+.contact_info.doc_info li span {
+	width: 100%;
+	max-width: 80px;
+	margin-top: 2px;
+	float: left;
+}
+.contact_info.doc_info li span + * {
+	display: block;
+	max-width: none;
+}
+.doctor-image img {
+	width: 100%;
+}
+
+@media only screen and (min-width: 767px) and (max-width: 991px) {
+
+}
+
+@media only screen and (max-width: 1199px) {
+.appointment_form{
+	padding: 20px;
+	margin: 80px 0;
+}
+.doc_why_choose {
+	margin-bottom: 80px;
+}
+}
+@media only screen and (max-width: 991px) {
+
+}
+@media only screen and (max-width: 767px) {
+.appointment_form {
+	margin: 50px 0;
+}
+.doc_why_choose {
+	margin-bottom: 50px;
+}
+}
+@media only screen and (max-width: 480px) {
+.appointment_form {
+	margin: 30px 0;
+}
+.doc_why_choose {
+	margin-bottom: 30px;
+}
+.dr-description > a {
+	float: none;
+	margin-bottom: 15px;
+}
+.contact_info.doc_info li span {
+	width: auto;
+	max-width: none;
+}
+}

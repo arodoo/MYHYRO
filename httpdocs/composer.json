@@ -1,0 +1,7 @@
+{
+    "description": "This is an example of OVH APIs wrapper usage",
+    "require": {
+        "mangopay/php-sdk-v2": "3.10.0",
+        "ovh/ovh": "^2.1"
+    }
+}

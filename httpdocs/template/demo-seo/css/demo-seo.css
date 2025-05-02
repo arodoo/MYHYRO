@@ -1,0 +1,49 @@
+body {
+	color: #7F8096;
+}
+h1, h2, h3, h4, h5, h6 {
+	color: #252740;
+}
+p {
+	color: #7F8096;
+}
+.wave_shape_bottom {
+	background-image: url(../images/banner_shape.png);
+	background-position: bottom center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.wave_shape_top {
+	background-image: url(../images/wave_shape.png);
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.wave_shape_top3 {
+	background-image: url(../images/wave_shape3.png);
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.footer_pattern_bg {
+	background-image: url(../images/pattern_bg.png);
+	background-position: top center;
+}
+
+
+
+
+
+@media only screen and (min-width: 991px) and (max-width: 1199px) {
+}
+@media only screen and (max-width: 1199px) {
+}
+@media only screen and (max-width: 767px) {
+}
+@media only screen and (max-width: 575px) {
+}
+@media only screen and (max-width: 480px) {
+}
+@media only screen and (max-width: 380px) {
+
+}

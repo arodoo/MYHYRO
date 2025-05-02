@@ -1,0 +1,543 @@
+.classes_box {
+	position: relative;
+	margin-bottom: 30px;
+}
+.classes_img img {
+	width: 100%;
+}
+.classes_teacher {
+	margin-top: -23px;
+	float: right;
+	position: relative;
+	z-index: 1;
+	margin-right: 20px;
+	padding: 3px;
+	background-color: #fff;
+	border-radius: 40px;
+	box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+.classes_teacher img {
+	border-radius: 100%;
+	max-width: 40px;
+}
+.classes_teacher span {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	right: 0;
+	min-width: 7rem;
+	text-align: center;
+	background-color: #fff;
+	padding: 5px;
+	box-shadow: 0 0 5px rgba(0,0,0,0.2);
+	-moz-transform: translateX(-50%);
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+	margin-bottom: 0px;
+	opacity: 0;
+	visibility: hidden;
+	color: #292b2c;
+	transition: all 0.5s ease;
+}
+.classes_teacher span::before {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 8px 8px 0 8px;
+	border-color: #fff transparent transparent transparent;
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	text-align: center;
+	margin: 0 auto;
+	top: 100%;
+}
+.classes_teacher:hover span {
+	opacity: 1;
+	margin-bottom: 5px;
+	visibility: visible;
+}
+.cl_price {
+	position: absolute;
+	top: 10px;
+	left: -10px;
+	z-index: 9999;
+	background-color: #0e93d8;
+	color: #fff;
+	padding: 5px 20px;
+	line-height: normal;
+	font-size: 18px;
+}
+.cl_price::before,
+.event_date:after {
+	content: "";
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 0 10px 10px 0;
+	border-color: transparent #1083c8 transparent transparent;
+	position: absolute;
+	left: 0;
+	top: 100%;
+}
+.classes_info {
+	padding: 25px 20px;
+}
+.courses_info .rating_stars {
+	float: left;
+}
+.courses_info, .content_meta {
+	display: inline-block;
+	width: 100%;
+	vertical-align: middle;
+}
+.rating_stars i {
+	color: #ffc600;
+	font-size: 18px;
+	line-height: normal;
+}
+.content_meta li {
+	float: left;
+	padding-right: 15px;
+	font-size: 15px;
+}
+.content_meta li:last-child {
+	padding-right: 0px;
+}
+.classes_title a {
+	font-weight: 600;
+}
+.content_meta li i {
+	margin-right: 6px;
+	font-size: 14px;
+}
+.courses_info .content_meta {
+	float: right;
+	width: auto;
+}
+.courses_info {
+	border-top: 1px solid #ddd;
+	padding-top: 20px;
+}
+.classes_img {
+	position: relative;
+}
+.apply_btn {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+	-moz-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.5s ease-in-out;
+}
+.classes_img::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 50%;
+	bottom: 50%;
+	right: 0;
+	background-color: rgba(0,0,0,0.5);
+	transition: all 0.5s ease-in-out;
+}
+.classes_box:hover .classes_img::before {
+	top: 0;
+	bottom:0;
+}
+.classes_box:hover .apply_btn {
+	top: 50%;
+	opacity: 1;
+	visibility: visible;
+}
+.event_box {
+	margin-bottom: 30px;
+}
+.event_img {
+	position: relative;
+}
+.event_img img {
+	width: 100%;
+}
+.event_title {
+	font-weight: 600;
+}
+.event_date {
+	position: absolute;
+	left: -10px;
+	top: 10px;
+	padding: 10px 15px;
+}
+.event_date * {
+	margin: 0;
+}
+.event_date * {
+	margin: 0;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 600;
+}
+.event_info {
+	padding: 20px;
+}
+.event_meta li {
+	float: left;
+	padding-right: 15px;
+	font-size: 15px;
+}
+.event_meta {
+	display: inline-block;
+	width: 100%;
+}
+.event_meta li i {
+	margin-right: 8px;
+	vertical-align: middle;
+}
+.apply_form {
+	padding: 30px;
+}
+
+.countent_detail_meta {
+	display: inline-block;
+	width: 100%;
+}
+.countent_detail_meta ul {
+	list-style: none;
+}
+.countent_detail_meta li {
+	float: left;
+	padding-right: 15px;
+	margin-right: 15px;
+	border-right: 1px solid #dad1b9;
+}
+.instructor img {
+	float: left;
+	margin-right: 10px;
+	max-width: 50px;
+	width: 100%;
+}
+.countent_detail_meta label {
+	display: block;
+	font-weight: bold;
+	color: #333;
+	margin: 0;
+}
+.course_student span {
+	color: #333;
+}
+.instructor_info {
+	overflow: hidden;
+}
+.course_cat a::after {
+	content: ",";
+	margin: 0 2px;
+}
+.course_cat a:last-child:after {
+	content: normal;
+}
+.countent_detail_meta li:last-child {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+.course_content {
+	margin-top: 20px;
+}
+.course_title {
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+}
+.course_title h2,
+.event_title h2 {
+	font-size: 24px;
+	margin: 0;
+	font-weight: 600;
+}
+.course_categories .rating_stars {
+	float: left;
+	margin-right: 5px;
+}
+.course_categories .rating_stars + span {
+	font-size: 14px;
+	vertical-align: top;
+	text-transform: capitalize;
+}
+.course_info {
+	margin-bottom: 30px;
+	padding: 15px;
+	background-color: #F6475F;
+}
+.course_price {
+	text-align: center;
+	font-size: 40px;
+	font-weight: bold;
+	color: #fff;
+	line-height: normal;
+	margin-bottom: 15px;
+	border-bottom: 1px solid #fff;
+	padding-bottom: 10px;
+}
+.course_info ul li {
+	color: #fff;
+	list-style: none;
+	padding-bottom: 10px;
+	border-bottom: 1px dotted #fff;
+	margin-bottom: 10px;
+	font-weight: 600;
+}
+.course_info ul li:last-child {
+	border-bottom: 0;
+}
+.course_info li span {
+	float: right;
+	font-weight: normal;
+}
+.course_info ul li i {
+	margin-right: 5px;
+	width: 20px;
+}
+.course_desc ,
+.instructor-info{
+	margin-top: 30px;
+}
+.curriculum {
+	margin-top: 20px;
+	display: inline-block;
+	width: 100%;
+}
+.course_rate .review_bar {
+    width: calc(100% - 120px);
+    margin: 0 10px;
+    height: 15px;
+    background-color: #DDD;
+    display: inline-block;
+}
+.course_rate .review_bar .rating {
+    background-color: #FFBC09;
+	height: 15px;
+}
+.course_rating {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+	-ms-flex-align: center;
+	align-items: center;
+	margin-top: 30px;
+}
+.rating_review {
+	width: 40%;
+	text-align: center;
+	background-color: #f5f5f5;
+	padding: 20px;
+}
+.review_number {
+	display: block;
+	font-size: 70px;
+	color: #333;
+	font-weight: 500;
+	line-height: normal;
+}
+.rating_box {
+	width: 60%;
+	padding: 15px;
+}
+.course_rate {
+	margin-bottom: 10px;
+}
+.course_rate:last-child {
+	margin-bottom: 0px;
+}
+.item_meta.duration {
+	color: #808080;
+	font-size: 14px;
+	float: right;
+	white-space: nowrap;
+}
+.item_meta.duration::before {
+	content: "\f017";
+	font-family: "Font Awesome 5 Free";
+	margin-right: 5px;
+}
+.curriculum-icon {
+	width: 30px;
+	padding-right: 0 !important;
+}
+.curriculum-icon i {
+	margin-top: 5px;
+}
+.curriculum-link {
+	display: block;
+	font-size: 10px;
+	text-transform: uppercase;
+	margin-top: 5px;
+}
+.curriculum .table {
+	margin: 0;
+}
+.curriculum .table td {
+	text-transform: capitalize;
+}
+.curriculum .table tr:first-child td {
+	border-top: 0;
+}
+.instructor-info .card {
+	border-radius: 0;
+}
+.event_map {
+	margin-bottom: 40px;
+}
+.event_map iframe {
+	width: 100%;
+	height: 300px;
+}
+.single_event .event_title {
+	margin-top: 15px;
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+	border-bottom: 1px solid #ddd;
+}
+.single_event_info li {
+	list-style: none;
+	padding-bottom: 15px;
+	color: #333;
+	font-weight: 600;
+}
+.single_event_info li:last-child {
+	padding-bottom: 0;
+}
+.single_event_info li i {
+	width: 25px;
+	color: #0e93d8;
+}
+.single_event_info li span {
+	color: #666;
+	font-weight: normal;
+	margin-left: 5px;
+}
+.event_timer {
+	padding: 15px;
+}
+.event_timer .countdown_time {
+	margin-bottom: 10px;
+}
+.event_desc {
+	margin-top: 20px;
+}
+.teacher_detail .card {
+	margin-bottom: 15px;
+}
+.teacher_detail .card-body p:last-child {
+	margin: 0;
+}
+.teacher_detail .card-body {
+	padding: 10px 15px;
+}
+.teacher_detail .card-header {
+	text-transform: capitalize;
+}
+.single_post .blog_content .blog_text > h2 {
+	font-size: 28px;
+	font-weight: bold;
+}
+.lr_form {
+    max-width: 450px;
+}
+
+@media only screen and (max-width: 1199px) {
+.course_info .btn {
+	padding: 10px 20px;
+}
+.event_timer .countdown_box .countdown,
+.event_timer .countdown_style1 .countdown_box::before {
+	font-size: 30px;
+}
+}
+@media only screen and (max-width: 991px) {
+.teacher_detail {
+	margin-top: 30px;
+}
+}
+@media only screen and (max-width: 767px) {
+.countent_detail_meta li {
+	float: none;
+	padding-right: 0;
+	margin-right: 0;
+	border-right: 0;
+	clear: both;
+	text-align: center;
+	margin-bottom: 15px;
+}
+.instructor img {
+	float: none;
+	margin-bottom: 5px;
+	margin-right: 0;
+}
+.countent_detail_meta li {
+	text-align: center;
+}
+.course_categories .rating_stars {
+	float: none;
+	margin-right: 0;
+}
+.course_desc, .instructor-info {
+	margin-top: 15px;
+}
+.curriculum {
+	margin-top: 10px;
+}
+.review_number {
+	font-size: 50px;
+}
+.course_rating {
+	margin-top: 20px;
+}
+.event_timer {
+	margin-top: 20px;
+}
+.team_single_info {
+	margin-top: 30px;
+}
+}
+@media only screen and (max-width: 575px) {
+.classes_box,
+.event_box {
+	margin-bottom: 15px;
+}
+.apply_form {
+	padding: 20px;
+}
+.rating_review, .rating_box {
+	width: 100%;
+}
+.rating_box {
+	padding: 15px 0 0;
+}
+}
+@media only screen and (max-width: 480px) {
+.course_title h2,
+.event_title h2 {
+	font-size: 18px;
+}
+.curriculum .table td {
+	font-size: 14px;
+}
+.review_number {
+	font-size: 40px;
+}
+.btn-login li {
+	margin: 10px 0px 0;
+	display: block;
+}
+}
+@media only screen and (max-width: 380px) {
+.item_meta.duration {
+	font-size: 12px;
+}
+}
