@@ -111,7 +111,7 @@ isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($
 		$sql_insert->closeCursor();
 
 		$result = array(
-            "Texte_rapport" => "Ajout effectuées !",
+            "Texte_rapport" => "Produit ajouté avec succès !",
             "retour_validation" => "ok",
             "retour_lien" => ""
         );
@@ -158,3 +158,4 @@ isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($
 }
 
 ob_end_flush();
+?>

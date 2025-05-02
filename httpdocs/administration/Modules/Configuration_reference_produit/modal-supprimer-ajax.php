@@ -20,21 +20,22 @@ $req_select->closeCursor();
 
 ?>
 
-<!-- <div class="modal fade" id="myModal" style="display: none;"> -->
-<div class="modal fade" id="modalSuppr" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="modalSuppr" tabindex="-1" role="dialog" aria-labelledby="modalSupprLabel">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Confirmation de suppression</h4>
+        <h5 class="modal-title" id="modalSupprLabel">Confirmation de suppression</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-
-        <p>Êtes-vous sûr(e) de vouloir supprimer <strong> <?php echo $categorie['nom_categorie']; ?></strong> ?</p>
+        <div class="d-flex align-items-center">
+          <span class="fas fa-exclamation-triangle text-warning fs-3 me-3"></span>
+          <p class="mb-0">Êtes-vous sûr(e) de vouloir supprimer <strong><?php echo $categorie['nom_categorie']; ?></strong> ?</p>
+        </div>
       </div>
       <div class="modal-footer">
-        <button id="btnNon" type="button" class="btn btn-default" data-dismiss="modal">Non</button>
-        <button id="btnSuppr" data-id="<?= $idaction ?>" type="button" class="btn btn-primary">Oui</button>
+        <button id="btnNon" type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Non</button>
+        <button id="btnSuppr" data-id="<?= $idaction ?>" type="button" class="btn btn-danger btn-sm">Oui</button>
       </div>
     </div>
   </div>

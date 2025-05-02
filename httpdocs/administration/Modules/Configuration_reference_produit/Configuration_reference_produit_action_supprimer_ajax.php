@@ -37,7 +37,7 @@ $sql_delete = $bdd->prepare("DELETE FROM configurations_references_produits WHER
 $sql_delete->execute(array($idaction));                     
 $sql_delete->closeCursor();
 
-$result = array("Texte_rapport"=>"Produit supprimée avec succès !","retour_validation"=>"ok","retour_lien"=>"");
+$result = array("Texte_rapport"=>"Produit supprimé avec succès !","retour_validation"=>"ok","retour_lien"=>"");
 
 $result = json_encode($result);
 echo $result;
