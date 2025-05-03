@@ -1,6 +1,5 @@
 <?php
 
-
 /*****************************************************\
  * Adresse e-mail => direction@codi-one.fr             *
  * La conception est assujettie à une autorisation     *
@@ -37,10 +36,52 @@ if (
     //   }
     // }
     $(document).ready(function() {
+      // Modal trigger functionality - moved from Configuration_reference_produit_liste_ajax.php
+      $(document).on('click', '.btnSupprModal', function() {
+        var id = $(this).data('id');
+        $.post({
+          url: '/administration/Modules/Configuration_reference_produit/modal-supprimer-ajax.php',
+          type: 'POST',
+          data: { idaction: id },
+          dataType: "html",
+          success: function(res) {
+            $("#modal-container").html(res);
+            $("#modalSuppr").modal('show');
+          }
+        });
+      });
+
+      // Delete confirmation button click handler - all operations in parent context
+      $(document).on('click', '#btnSuppr', function() {
+        var id = $(this).data('id');
+        $.post({
+          url: '/administration/Modules/Configuration_reference_produit/Configuration_reference_produit_action_supprimer_ajax.php',
+          type: 'POST',
+          data: { idaction: id },
+          dataType: "json",
+          success: function(res) {
+            if (res.retour_validation == "ok") {
+              popup_alert(res.Texte_rapport, "green filledlight", "#009900", "uk-icon-check");
+            } else {
+              popup_alert(res.Texte_rapport, "#CC0000 filledlight", "#CC0000", "uk-icon-times");
+            }
+            $("#modalSuppr").modal('hide');
+            listeproduit();
+          }
+        });
+      });
+
+      // Add event listener to handle messages from AJAX operations
+      document.addEventListener('product-deleted', function(e) {
+        if (e.detail.success) {
+          popup_alert(e.detail.message, "green filledlight", "#009900", "uk-icon-check");
+        } else {
+          popup_alert(e.detail.message, "#CC0000 filledlight", "#CC0000", "uk-icon-times");
+        }
+      });
 
       //AJAX SOUMISSION DU FORMULAIRE - MODIFIER - AJOUTER
       $(document).on("click", "#Configuration_reference_produit", function() {
-
         $.post({
           url: '/administration/Modules/Configuration_reference_produit/Configuration_reference_produit_modifier_ajax.php',
           type: 'POST',
@@ -67,7 +108,7 @@ if (
             console.log(xhtml.responseText);
           }
         });
-        liste - produit();
+        listeproduit();
       });
 
       //FUNCTION AJAX - LISTE Produit
@@ -86,6 +127,12 @@ if (
 
       // Separate function to initialize DataTable
       function initializeProductsDataTable() {
+        // Exit if table doesn't exist
+        if ($('.sa-datatables-init').length === 0) {
+          console.log('DataTable element not found');
+          return;
+        }
+        
         // Prevent duplicate initialization
         if ($.fn.DataTable.isDataTable('.sa-datatables-init')) {
           $('.sa-datatables-init').DataTable().destroy();
@@ -151,33 +198,49 @@ if (
         }, 10);
       }
 
+      // Call this function to load the product list
       listeproduit();
 
-      let btn = document.getElementById('addNewColor');
-      let allColor = document.getElementById('allColor');
-      btn.addEventListener('click', () => {
-        // alert('ici');
-        let newDiv = document.createElement('div');
-        let newInput = document.createElement('input');
-        newInput.setAttribute('type', 'color');
+      // Fix for color picker - only initialize if elements exist
+      // Use a safe way to handle the color picker
+      function initializeColorPicker() {
+        let addNewColorBtn = document.getElementById('addNewColor');
+        let allColorContainer = document.getElementById('allColor');
+        
+        if (addNewColorBtn && allColorContainer) {
+          addNewColorBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            let newDiv = document.createElement('div');
+            let newInput = document.createElement('input');
+            newInput.setAttribute('type', 'color');
 
-        let closeBtn = document.createElement('button');
-        let btnText = document.createTextNode('Retirer');
+            let closeBtn = document.createElement('button');
+            let btnText = document.createTextNode('Retirer');
 
-        let id = Date.now();
-        newDiv.setAttribute('id', id);
-        closeBtn.setAttribute('onclick', 'event.preventDefault();retirer(' + id + ')');
-        closeBtn.appendChild(btnText);
-        newDiv.appendChild(newInput);
-        newDiv.appendChild(closeBtn);
-        allColor.appendChild(newDiv);
-      });
-
-      function retirer(id) {
-        let div = document.getElementById(id);
-        div.remove();
+            let id = Date.now();
+            newDiv.setAttribute('id', id);
+            closeBtn.setAttribute('onclick', 'event.preventDefault();retirer(' + id + ')');
+            closeBtn.appendChild(btnText);
+            newDiv.appendChild(newInput);
+            newDiv.appendChild(closeBtn);
+            allColorContainer.appendChild(newDiv);
+          });
+        }
       }
-
+      
+      // Global function for removing color inputs
+      window.retirer = function(id) {
+        let div = document.getElementById(id);
+        if (div) {
+          div.remove();
+        }
+      };
+      
+      // Initialize color picker if we're on a form page
+      if ($('#Configuration_reference_produit_ajouter').length > 0 || $('#formulaire_modifier_configuration_reference_produit').length > 0) {
+        initializeColorPicker();
+      }
     });
   </script>
 

@@ -40,7 +40,7 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
         $JSPANEL_URL_IFRAME_INDEX = $pageencoursuuuuooi2['0'];
     }
 
-?>
+    ?>
 
     <!DOCTYPE html>
     <html lang="en" dir="ltr" data-scompiler-id="0">
@@ -53,7 +53,8 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
         <!-- icon -->
         <link rel="shortcut icon" type="image/x-icon" href="/template2/black/images/Mfavi.png" />
         <!-- fonts -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i" />
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i" />
         <!-- css -->
         <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.ltr.css" />
         <link rel="stylesheet" href="vendor/highlight.js/styles/github.css" />
@@ -65,10 +66,9 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
         <link rel="stylesheet" href="vendor/nouislider/nouislider.min.css" />
         <link rel="stylesheet" href="vendor/fullcalendar/main.min.css" />
         <link rel="stylesheet" href="css/style.css" />
-        <?php
-        ////INCLUDE JS BAS CMS CODI ONE
-        include('../administration/Assets/js/INCLUDE-JS-HAUT-CMS-CODI-ONE.php');
-        ?>
+
+        <!-- *** CRITICAL CHANGE: Load jQuery first, exactly how index.php does it *** -->
+        <script src="/template2/black/vendor/jquery/jquery.min.js"></script>
     </head>
 
     <body>
@@ -82,7 +82,8 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
                     <div class="sa-toolbar__body">
                         <div class="sa-toolbar__item">
                             <button class="sa-toolbar__button" type="button" aria-label="Menu" data-sa-toggle-sidebar="">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
+                                    fill="currentColor">
                                     <path d="M1,11V9h18v2H1z M1,3h18v2H1V3z M15,17H1v-2h14V17z"></path>
                                 </svg>
                             </button>
@@ -131,10 +132,13 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
                         </div> -->
                         <div class="mx-auto"></div>
                         <div class="sa-toolbar__item d-sm-none">
-                            <button class="sa-toolbar__button" type="button" aria-label="Show search" data-sa-action="show-search">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor">
+                            <button class="sa-toolbar__button" type="button" aria-label="Show search"
+                                data-sa-action="show-search">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"
+                                    fill="currentColor">
                                     <path
-                                        d="M16.243 14.828C16.243 14.828 16.047 15.308 15.701 15.654C15.34 16.015 14.828 16.242 14.828 16.242L10.321 11.736C9.247 12.522 7.933 13 6.5 13C2.91 13 0 10.09 0 6.5C0 2.91 2.91 0 6.5 0C10.09 0 13 2.91 13 6.5C13 7.933 12.522 9.247 11.736 10.321L16.243 14.828ZM6.5 2C4.015 2 2 4.015 2 6.5C2 8.985 4.015 11 6.5 11C8.985 11 11 8.985 11 6.5C11 4.015 8.985 2 6.5 2Z"></path>
+                                        d="M16.243 14.828C16.243 14.828 16.047 15.308 15.701 15.654C15.34 16.015 14.828 16.242 14.828 16.242L10.321 11.736C9.247 12.522 7.933 13 6.5 13C2.91 13 0 10.09 0 6.5C0 2.91 2.91 0 6.5 0C10.09 0 13 2.91 13 6.5C13 7.933 12.522 9.247 11.736 10.321L16.243 14.828ZM6.5 2C4.015 2 2 4.015 2 6.5C2 8.985 4.015 11 6.5 11C8.985 11 11 8.985 11 6.5C11 4.015 8.985 2 6.5 2Z">
+                                    </path>
                                 </svg>
                             </button>
                         </div>
@@ -323,18 +327,13 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
                             </div>
                         </div> -->
                         <div class="dropdown sa-toolbar__item">
-                            <button
-                                class="sa-toolbar-user"
-                                type="button"
-                                id="dropdownMenuButton"
-                                data-bs-toggle="dropdown"
-                                data-bs-offset="0,1"
-                                aria-expanded="false">
+                            <button class="sa-toolbar-user" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                data-bs-offset="0,1" aria-expanded="false">
                                 <span class="sa-toolbar-user__avatar sa-symbol sa-symbol--shape--rounded">
                                     <img src="images/customers/customer-4-64x64.jpg" width="64" height="64" alt="" />
                                 </span>
                                 <span class="sa-toolbar-user__info">
-                                    <span class="sa-toolbar-user__title"><?= $prenom_oo ?> <?= $nom_oo ?></span>
+                                    <span class="sa-toolbar-user__title"><?= $prenom_oo ?>     <?= $nom_oo ?></span>
                                     <span class="sa-toolbar-user__subtitle"><?= $mail_oo ?></span>
                                 </span>
                             </button>
@@ -352,13 +351,13 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
                 <!-- sa-app__toolbar / end -->
                 <!-- sa-app__body -->
                 <?php ////INCLUDE MODULE DECLARATION MODULE
-                if (!empty($_GET['page'])) {
-                    include('../administration/Modules/Membres-moderateurs/Moderateurs-modules-include-declarations-jquery.php');
-                }
-                ////SWITCH PAGES
-                include('../administration/pages.php');
+                    if (!empty($_GET['page'])) {
+                        include('../administration/Modules/Membres-moderateurs/Moderateurs-modules-include-declarations-jquery.php');
+                    }
+                    ////SWITCH PAGES
+                    include('../administration/pages.php');
 
-                ?>
+                    ?>
                 <!-- sa-app__body / end -->
                 <!-- sa-app__footer -->
                 <div class="sa-app__footer d-block d-md-flex">
@@ -378,19 +377,16 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
         <!-- scripts -->
 
         <?php
-    ////////////////////////////////////////////////////////////LISTE DES MODULES DISPONIBLENT DANS LE PANEL ADMINISTRATION
+        ////////////////////////////////////////////////////////////LISTE DES MODULES DISPONIBLENT DANS LE PANEL ADMINISTRATION
+    
+        // ////INCLUDE CSS BAS CMS CODI ONE
+        // include('../administration/Assets/css/INCLUDE-CSS-BAS-CMS-CODI-ONE.php');
+    
+        // First include the JS files in the header like index.php does
+        ////INCLUDE JS BAS CMS CODI ONE
+/*         include('../administration/Assets/js/INCLUDE-JS-HAUT-CMS-CODI-ONE.php');
+ */        ?>
 
-    // ////INCLUDE CSS BAS CMS CODI ONE
-    // include('../administration/Assets/css/INCLUDE-CSS-BAS-CMS-CODI-ONE.php');
-
-    ////INCLUDE JS BAS CMS CODI ONE
-    include('../administration/Assets/js/INCLUDE-JS-BAS-CMS-CODI-ONE.php');
-
-    ////INCLUDE POP-UP BAS CMS CODI ONE
-    include('../pop-up/INCLUDE-POP-UP-BAS-CMS-CODI-ONE.php');
-
-    ?>
-        <script src="vendor/jquery/jquery.min.js"></script>
         <script src="vendor/feather-icons/feather.min.js"></script>
         <script src="vendor/simplebar/simplebar.min.js"></script>
         <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -399,10 +395,13 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
         <script src="vendor/air-datepicker/js/datepicker.min.js"></script>
         <script src="vendor/air-datepicker/js/i18n/datepicker.en.js"></script>
         <script src="vendor/select2/js/select2.min.js"></script>
-        <script src="vendor/fontawesome/js/all.min.js" data-auto-replace-svg="" async=""></script>
-        <script src="vendor/chart.js/chart.min.js"></script>
+        
+        <!-- Make sure DataTables vendor scripts load before custom.js -->
         <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
         <script src="vendor/datatables/js/dataTables.bootstrap5.min.js"></script>
+        
+        <script src="vendor/fontawesome/js/all.min.js" data-auto-replace-svg="" async=""></script>
+        <script src="vendor/chart.js/chart.min.js"></script>
         <script src="vendor/nouislider/nouislider.min.js"></script>
         <script src="vendor/fullcalendar/main.min.js"></script>
         <script src="js/stroyka.js"></script>
@@ -410,12 +409,18 @@ if (isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && iss
         <script src="js/calendar.js"></script>
         <script src="js/demo.js"></script>
         <script src="js/demo-chart-js.js"></script>
+
+        <?php
+        // Keep the exact same order as index.php
+        include('../js/INCLUDE-JS-BAS-CMS-CODI-ONE.php');
+        include('../pop-up/INCLUDE-POP-UP-BAS-CMS-CODI-ONE.php');
+        ?>
     </body>
 
     </html>
 
 
-<?php
+    <?php
 
 } else {
     header('location: /index.html');

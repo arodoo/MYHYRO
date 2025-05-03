@@ -126,45 +126,6 @@ if (
       </tbody>
     </table>
   </div>
-
-  <script>
-    $(document).ready(function() {
-      // Modal delete functionality
-      $(document).on('click', '.btnSupprModal', function() {
-        var id = $(this).data('id');
-        $.post({
-          url: '/administration/Modules/Configuration_reference_produit/modal-supprimer-ajax.php',
-          type: 'POST',
-          data: { idaction: id },
-          dataType: "html",
-          success: function(res) {
-            $("#modal-container").html(res);
-            $("#modalSuppr").modal('show');
-          }
-        });
-      });
-
-      // Delete confirmation
-      $(document).on('click', '#btnSuppr', function() {
-        var id = $(this).data('id');
-        $.post({
-          url: '/administration/Modules/Configuration_reference_produit/Configuration_reference_produit_action_supprimer_ajax.php',
-          type: 'POST',
-          data: { idaction: id },
-          dataType: "json",
-          success: function(res) {
-            if (res.retour_validation == "ok") {
-              popup_alert(res.Texte_rapport, "green filledlight", "#009900", "uk-icon-check");
-              listeproduit();
-            } else {
-              popup_alert(res.Texte_rapport, "#CC0000 filledlight", "#CC0000", "uk-icon-times");
-            }
-            $("#modalSuppr").modal('hide');
-          }
-        });
-      });
-    });
-  </script>
   
   <!-- Modal container -->
   <div id="modal-container"></div>

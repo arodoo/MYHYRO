@@ -1,14 +1,20 @@
-
+<?php
+// Detect if we're in the admin panel
+$isAdminPanel = (strpos($_SERVER['REQUEST_URI'], '/administration/') !== false);
+?>
 <script src="/js/jspanel/jquery.jspanel.js"></script>
 <script src="/js/jspanel/jquery.jspanel-compiled.js"></script>
 <script src="/js/jspanel/jquery.jspanel.function-save.js"></script>
 
 <script src="/js/bootstrap/bootstrap-modal.js"></script>
 
-<script src="/js/datatables/jquery.dataTables.min.js" ></script>
+<?php if (!$isAdminPanel): ?>
+<!-- Only include frontend DataTables if not in admin panel -->
+<script src="/js/datatables/jquery.dataTables.min.js"></script>
 <script src='https://cdn.datatables.net/buttons/1.2.2/js/buttons.colVis.min.js'></script>
 <script src='/js/datatables/dataTables.responsive.min.js'></script>
 <script src='/js/datatables/dataTables.rowReorder.min.js'></script>
+<?php endif; ?>
 
 <script type="text/javascript" src="<?php echo "$http"; ?><?php echo "$nomsiteweb"; ?>/js/tinymce/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript" src="<?php echo "$http"; ?><?php echo "$nomsiteweb"; ?>/js/tinymce/script.js"></script>
