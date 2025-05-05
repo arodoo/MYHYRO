@@ -1,46 +1,77 @@
-<?php 
-try{
+<?php
+ob_start();
+////INCLUDES CONFIGURATIONS CMS CODI ONE
 require_once('../../../Configurations_bdd.php');
 require_once('../../../Configurations.php');
 require_once('../../../Configurations_modules.php');
 
 ////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction= "../../../";
+$dir_fonction = "../../../";
 require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
 
-if(isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 1 ||
-isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 4 ){
+$lasturl = $_SERVER['HTTP_REFERER'];
 
-$idaction = $_POST['idaction'];
+/*****************************************************\
+ * Adresse e-mail => direction@codi-one.fr             *
+ * La conception est assujettie à une autorisation     *
+ * spéciale de codi-one.com. Si vous ne disposez pas de*
+ * cette autorisation, vous êtes dans l'illégalité.    *
+ * L'auteur de la conception est et restera            *
+ * codi-one.fr                                         *
+ * Codage, script & images (all contenu) sont réalisés * 
+ * par codi-one.fr                                     *
+ * La conception est à usage unique et privé.          *
+ * La tierce personne qui utilise le script se porte   *
+ * garante de disposer des autorisations nécessaires   *
+ *                                                     *
+ * Copyright ... Tous droits réservés auteur (Fabien B)*
+  \*****************************************************/
 
-$req_select = $bdd->prepare("SELECT Mail FROM Newsletter_listing WHERE id = ?");
-$req_select->execute(array($idaction));
-$pays = $req_select->fetch();
-$req_select->closeCursor();
+if (
+  isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 1 ||
+  isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 3
+) {
 
-?>
+  $idaction = $_POST['idaction'];
 
-<!-- <div class="modal fade" id="myModal" style="display: none;"> -->
-<div class="modal fade" id="modalSuppr" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Confirmation de suppression</h4>
-      </div>
-      <div class="modal-body">
+  // Fetch email info to display in confirmation modal
+  $req_select = $bdd->prepare("SELECT Mail as email FROM Newsletter_listing WHERE id=?");
+  $req_select->execute(array($idaction));
+  $ligne_select = $req_select->fetch();
+  $req_select->closeCursor();
 
-        <p>Êtes-vous sûr(e) de vouloir supprimer <?php echo $pays['Mail']; ?> de la newsletter ?</p>
-      </div>
-      <div class="modal-footer">
-        <button id="btnNon" type="button" class="btn btn-default" data-dismiss="modal">Non</button>
-        <button id="btnSuppr" data-id="<?= $idaction ?>" type="button" class="btn btn-primary">Oui</button>
+  $email = $ligne_select['email'];
+  ?>
+
+  <!-- Modal -->
+  <div class="modal fade" id="modalSuppr" tabindex="-1" aria-labelledby="modalSupprLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSupprLabel">Confirmation de suppression</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr(e) de vouloir supprimer cet abonnement à la newsletter ?</p>
+          <?php if (!empty($email)) { ?>
+            <div class="alert alert-warning">
+              <strong>Email :</strong> <?php echo $email; ?>
+            </div>
+          <?php } ?>
+          <p>Cette action est irréversible.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-danger" id="btnSuppr" data-id="<?php echo $idaction; ?>">Oui,
+            supprimer</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<?php }
-}catch(Exception $e){
-  echo $e->getMessage();
-} ?>
+  <?php
+} else {
+  header('location: /index.html');
+}
+ob_end_flush();
+?>
