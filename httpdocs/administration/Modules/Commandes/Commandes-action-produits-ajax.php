@@ -75,9 +75,9 @@ if (isset($user)) {
                             $prix_total_ligne = ($prix_unitaire * $quantite) * (1 - ($remise / 100));
 
                             // Insert product into order
-                            $insert_product = $bdd->prepare("INSERT INTO membres_commandes_produits
+                            $insert_product = $bdd->prepare("INSERT INTO membres_commandes_details 
                             (
-                                id_commande,
+                                commande_id,
                                 id_produit,
                                 libelle,
                                 reference,
@@ -121,14 +121,14 @@ if (isset($user)) {
 
                         if ($id_ligne > 0) {
                             // Get product line details before deletion
-                            $get_line = $bdd->prepare("SELECT prix_total FROM membres_commandes_produits WHERE id = ? AND id_commande = ?");
+                            $get_line = $bdd->prepare("SELECT prix_total FROM membres_commandes_details WHERE id = ? AND commande_id = ?");
                             $get_line->execute(array($id_ligne, $id_commande));
 
                             if ($line = $get_line->fetch(PDO::FETCH_ASSOC)) {
                                 $line_total = floatval($line['prix_total']);
 
                                 // Delete product from order
-                                $delete_product = $bdd->prepare("DELETE FROM membres_commandes_produits WHERE id = ? AND id_commande = ?");
+                                $delete_product = $bdd->prepare("DELETE FROM membres_commandes_details WHERE id = ? AND commande_id = ?");
                                 $delete_product->execute(array($id_ligne, $id_commande));
 
                                 // Update order total price
@@ -157,7 +157,7 @@ if (isset($user)) {
 
                         if ($id_ligne > 0 && $quantite > 0) {
                             // Get current product line details
-                            $get_line = $bdd->prepare("SELECT prix_unitaire, prix_total, tva, remise FROM membres_commandes_produits WHERE id = ? AND id_commande = ?");
+                            $get_line = $bdd->prepare("SELECT prix_unitaire, prix_total, tva, remise FROM membres_commandes_details WHERE id = ? AND commande_id = ?");
                             $get_line->execute(array($id_ligne, $id_commande));
 
                             if ($line = $get_line->fetch(PDO::FETCH_ASSOC)) {
@@ -169,12 +169,12 @@ if (isset($user)) {
                                 $new_prix_total_ligne = ($current_pu * $quantite) * (1 - ($current_remise / 100));
 
                                 // Update product line
-                                $update_product = $bdd->prepare("UPDATE membres_commandes_produits SET 
+                                $update_product = $bdd->prepare("UPDATE membres_commandes_details SET 
                                     quantite = ?,
                                     prix_unitaire = ?,
                                     remise = ?,
                                     prix_total = ?
-                                    WHERE id = ? AND id_commande = ?");
+                                    WHERE id = ? AND commande_id = ?");
 
                                 $update_product->execute(array(
                                     $quantite,
@@ -206,9 +206,9 @@ if (isset($user)) {
                         $get_products = $bdd->prepare("SELECT p.*, 
                             IFNULL(prod.titre, p.libelle) as titre_produit,
                             IFNULL(prod.reference, p.reference) as reference_produit
-                            FROM membres_commandes_produits p
+                            FROM membres_commandes_details p
                             LEFT JOIN produits prod ON p.id_produit = prod.id
-                            WHERE p.id_commande = ?
+                            WHERE p.commande_id = ?
                             ORDER BY p.id DESC");
                         $get_products->execute(array($id_commande));
 

@@ -97,22 +97,28 @@ if (
             });
         }
 
+        // Function to load order details
+        function loadOrderDetails(orderId, isDashboard = true) {
+            $.post({
+                url: '/administration/Modules/Commandes/Commandes-action-details-ajax.php',
+                type: 'POST',
+                data: { 
+                    idaction: orderId,
+                    is_dashboard: isDashboard ? 'true' : 'false'
+                },
+                dataType: "html",
+                success: function(res) {
+                    $("#details-commande").html(res);
+                }
+            });
+        }
+
         // Charger la liste des commandes au chargement
         listeCommandes();
 
         // Si on est en mode détails, charger les détails de la commande
         <?php if ($action == "Details") { ?>
-                $.post({
-                    url: '/administration/Modules/Commandes/Commandes-action-details-ajax.php',
-                    type: 'POST',
-                    data: {
-                        idaction: "<?php echo $idaction; ?>"
-                    },
-                    dataType: "html",
-                    success: function(res) {
-                        $("#details-commande").html(res);
-                    }
-                });
+            loadOrderDetails("<?php echo $idaction; ?>", true);
         <?php } ?>
 
         // Événement pour la mise à jour d'une commande
@@ -412,6 +418,123 @@ if (
         $(document).on("input", "#poids", function() {
             douanetrans();
         });
+
+        // Address editing
+        $(document).on("click", ".modif-liv", function() {
+            $("#adresse-livraison-view").hide();
+            $("#adresse-livraison-edit").show();
+        });
+
+        $(document).on("click", ".modif-fac", function() {
+            $("#adresse-facturation-view").hide();
+            $("#adresse-facturation-edit").show();
+        });
+
+        $(document).on("click", ".cancel-modif", function() {
+            $("#adresse-livraison-view, #adresse-facturation-view").show();
+            $("#adresse-livraison-edit, #adresse-facturation-edit").hide();
+        });
+
+        // Product modal
+        $(document).on("click", "#add-product-btn", function() {
+            $("#addProductModal").modal('show');
+        });
+
+        $(document).on("click", "#save-new-product", function() {
+            let idCommande = $("#idWish").val();
+            let libelle = $("#new-product-libelle").val();
+            let reference = $("#new-product-reference").val();
+            let url = $("#new-product-url").val();
+            let quantite = $("#new-product-quantity").val();
+            let prix_unitaire = $("#new-product-price").val();
+            let remise = $("#new-product-discount").val();
+            
+            $.post({
+                url: '/administration/Modules/Commandes/Commandes-action-produits-ajax.php',
+                type: 'POST',
+                data: {
+                    id_commande: idCommande,
+                    action: 'add',
+                    libelle: libelle,
+                    reference: reference,
+                    url: url,
+                    quantite: quantite,
+                    prix_unitaire: prix_unitaire,
+                    remise: remise
+                },
+                success: function(res) {
+                    res = JSON.parse(res);
+                    if (res.retour_validation == "ok") {
+                        $("#addProductModal").modal('hide');
+                        showToast("success", "Succès", res.Texte_rapport);
+                        setTimeout(() => {
+                            document.location.reload();
+                        }, 1500);
+                    } else {
+                        showToast("error", "Erreur", res.Texte_rapport);
+                    }
+                }
+            });
+        });
+
+        // Transaction modal and delete product
+        $(document).on("click", ".transaction-details", function() {
+            const id = $(this).data('id');
+            $("#transaction-details-content").html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>');
+            $("#transactionDetailsModal").modal('show');
+            
+            $.post({
+                url: '/administration/Modules/Commandes/Commandes-action-transaction-details-ajax.php',
+                type: 'POST',
+                data: { id: id },
+                success: function(res) {
+                    $("#transaction-details-content").html(res);
+                }
+            });
+        });
+        
+        $(document).on("click", ".delete-product", function() {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce produit ?")) {
+                let idCommande = $("#idWish").val();
+                let idLigne = $(this).data('id');
+                
+                $.post({
+                    url: '/administration/Modules/Commandes/Commandes-action-produits-ajax.php',
+                    type: 'POST',
+                    data: {
+                        id_commande: idCommande,
+                        action: 'remove',
+                        id_ligne: idLigne
+                    },
+                    success: function(res) {
+                        res = JSON.parse(res);
+                        if (res.retour_validation == "ok") {
+                            showToast("success", "Succès", res.Texte_rapport);
+                            setTimeout(() => {
+                                document.location.reload();
+                            }, 1500);
+                        } else {
+                            showToast("error", "Erreur", res.Texte_rapport);
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Function to calculate customs and shipping
+        function douaneCalc() {
+            const prix_expedition = $("#prix_expedition").val();
+            const douane_et_transport_reel = $("#douane_et_transport_reel").val();
+            const ecart = prix_expedition - douane_et_transport_reel;
+            
+            $("#ecart").val(Math.round(ecart));
+            
+            if (ecart > 0) {
+                $("#ecart").removeClass("border-danger text-danger").addClass("border-success text-success");
+            } else {
+                $("#ecart").removeClass("border-success text-success").addClass("border-danger text-danger");
+            }
+        }
     });
     </script>
 

@@ -42,6 +42,23 @@ if (isset($user)) {
             $check_sql->execute(array($id));
 
             if ($check_sql->rowCount() > 0) {
+                // Check if order has colis records before deletion
+                $check_colis = $bdd->prepare("SELECT id FROM membres_colis WHERE panier_id = ?");
+                $check_colis->execute(array($id));
+                
+                if ($check_colis->rowCount() > 0) {
+                    // There are linked colis records - handle accordingly
+                    // Either prevent deletion or handle the relationship
+                    $bdd->rollBack();
+                    $result = array(
+                        "Texte_rapport" => "Erreur: Cette commande est liée à un ou plusieurs colis. Veuillez d'abord supprimer les colis associés.",
+                        "retour_validation" => "non",
+                        "retour_lien" => ""
+                    );
+                    echo json_encode($result);
+                    exit;
+                }
+
                 // Create a record in the history table before deletion
                 $now = time();
                 $history_sql = $bdd->prepare("INSERT INTO admin_commandes_historique
@@ -68,7 +85,7 @@ if (isset($user)) {
                 $delete_transactions->execute(array($id));
 
                 // Delete order items
-                $delete_items = $bdd->prepare("DELETE FROM membres_commandes_produits WHERE id_commande = ?");
+                $delete_items = $bdd->prepare("DELETE FROM membres_commandes_details  WHERE commande_id = ?");
                 $delete_items->execute(array($id));
 
                 // Delete order

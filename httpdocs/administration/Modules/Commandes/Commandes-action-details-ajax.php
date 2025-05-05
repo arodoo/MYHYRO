@@ -40,12 +40,17 @@ if (isset($user) && isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b
 
     // Check for linked package/colis
     $colis_lie = array();
-    $sql_select = $bdd->prepare('SELECT * FROM colis WHERE id_commande=? LIMIT 1');
-    $sql_select->execute(array($commande['id']));
-    if ($sql_select->rowCount() > 0) {
-        $colis_lie = $sql_select->fetch();
+    try {
+        $sql_select = $bdd->prepare('SELECT * FROM membres_colis WHERE panier_id=? LIMIT 1');
+        $sql_select->execute(array($commande['panier_id']));
+        if ($sql_select->rowCount() > 0) {
+            $colis_lie = $sql_select->fetch();
+        }
+        $sql_select->closeCursor();
+    } catch (PDOException $e) {
+        // Table doesn't exist or other DB error, just continue with empty colis_lie
+        error_log("DB query failed in order details: " . $e->getMessage());
     }
-    $sql_select->closeCursor();
 
     // Get order products
     $sql_select = $bdd->prepare('SELECT * FROM membres_commandes_details WHERE commande_id=? ORDER BY id ASC');
@@ -53,11 +58,11 @@ if (isset($user) && isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b
     $produits_commande = $sql_select->fetchAll(PDO::FETCH_ASSOC);
     $sql_select->closeCursor();
 
-    // Get order shipping rates
-    $sql_select = $bdd->prepare('SELECT * FROM expedition_tarifs WHERE zone_geo=? AND poids_min <= ? AND poids_max >= ? LIMIT 1');
-    $sql_select->execute(array($commande['zone_geo'], $commande['poids'], $commande['poids']));
-    $tarif_expedition = $sql_select->fetch();
-    $sql_select->closeCursor();
+    // Set shipping data directly from the order record instead of querying expedition_tarifs
+    $tarif_expedition = array(
+        'tarif' => $commande['frais_livraison'],
+        'tarif_kg' => isset($commande['prix_du_kg']) ? $commande['prix_du_kg'] : 0
+    );
 
     // Get order transactions
     $sql_select = $bdd->prepare('SELECT * FROM membres_transactions_commande WHERE id_commande=? ORDER BY date DESC');
