@@ -6,7 +6,7 @@ require_once('../../../Configurations.php');
 require_once('../../../Configurations_modules.php');
 
 ////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction = "../../../";
+$dir_fonction = "../../";
 require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
 
 $lasturl = $_SERVER['HTTP_REFERER'];
@@ -28,20 +28,34 @@ $lasturl = $_SERVER['HTTP_REFERER'];
   \*****************************************************/
 
 $id = $_POST['id'];
-$status = $_POST['status'];
 
 if (isset($user)) {
-    if (isset($id) && isset($status)) {
-        $sql_update = $bdd->prepare("UPDATE membres_souhait SET statut=? WHERE id=?");
-        $sql_update->execute(array(htmlspecialchars($status), intval($id)));
+    if(isset($id)){
+        $sql_update = $bdd->prepare("DELETE FROM membres_souhait WHERE id=?");
+    
+        $sql_update->execute(
+            array(
+                intval($id)
+            )
+        );
         $sql_update->closeCursor();
 
-        $result = array("Texte_rapport" => "Demande modifiée !", "retour_validation" => "ok", "retour_lien" => "");
-    } else {
+        $sql_update = $bdd->prepare("DELETE FROM membres_souhait_details WHERE liste_id=?");
+    
+        $sql_update->execute(
+            array(
+                intval($id)
+            )
+        );
+        $sql_update->closeCursor();
+
+        $result = array("Texte_rapport" => "Demande supprimée!", "retour_validation" => "ok", "retour_lien" => "");
+    }else{
         $result = array("Texte_rapport" => "Erreur", "retour_validation" => "non", "retour_lien" => "");
     }
-
-    echo json_encode($result);
+    
+    $result = json_encode($result);
+    echo $result;
 } else {
     header('location: /index.html');
 }

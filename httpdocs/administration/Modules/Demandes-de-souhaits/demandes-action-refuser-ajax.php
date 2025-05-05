@@ -6,7 +6,7 @@ require_once('../../../Configurations.php');
 require_once('../../../Configurations_modules.php');
 
 ////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction = "../../";
+$dir_fonction = "../../../";
 require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
 
 $lasturl = $_SERVER['HTTP_REFERER'];
@@ -30,25 +30,17 @@ $lasturl = $_SERVER['HTTP_REFERER'];
 $id = $_POST['id'];
 
 if (isset($user)) {
-    if(isset($id)){
-        $sql_update = $bdd->prepare("UPDATE membres_souhait SET
-        statut=?
-        WHERE id=?");
-    
-        $sql_update->execute(
-            array(
-                intval(4),
-                intval($id)
-            )
-        );
+    if (isset($id)) {
+        $sql_update = $bdd->prepare("UPDATE membres_souhait SET statut=? WHERE id=?");
+        $sql_update->execute(array(intval(4), intval($id)));
         $sql_update->closeCursor();
-        $result = array("Texte_rapport" => "Demande refusé !", "retour_validation" => "ok", "retour_lien" => "");
-    }else{
+
+        $result = array("Texte_rapport" => "Demande refusée !", "retour_validation" => "ok", "retour_lien" => "");
+    } else {
         $result = array("Texte_rapport" => "Erreur", "retour_validation" => "non", "retour_lien" => "");
     }
-    
-    $result = json_encode($result);
-    echo $result;
+
+    echo json_encode($result);
 } else {
     header('location: /index.html');
 }

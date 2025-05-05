@@ -35,14 +35,11 @@ if (
 
   $nom_fichier = "Configuration_reference_produit";
   $nom_fichier_datatable = "Configuration_reference_produit" . date('d-m-Y', time()) . "-$nomsiteweb";
-?>
+  ?>
 
   <div class="card">
     <div class="p-4">
-      <input
-        type="text"
-        placeholder="Rechercher des produits..."
-        class="form-control form-control--search mx-auto"
+      <input type="text" placeholder="Rechercher des produits..." class="form-control form-control--search mx-auto"
         id="table-search" />
     </div>
     <div class="sa-divider"></div>
@@ -78,14 +75,14 @@ if (
           $lien = $ligne_boucle['lien_chez_un_marchand'];
           $date = $ligne_boucle['date_ajout'];
           $nom_categorie = $ligne_boucle['nom_categorie']; // Nom de la catégorie
-
+      
           ///////////////////////////////SELECT
           $req_select = $bdd->prepare("SELECT * FROM configurations_references_produits WHERE id=?");
           $req_select->execute(array($nomproduit));
           $ligne_select = $req_select->fetch();
           $req_select->closeCursor();
           $idd = $ligne_select['nomproduit'];
-        ?>
+          ?>
           <tr>
             <td style='text-align: center;'><?php echo $refproduithyro; ?></td>
             <td style='text-align: center;'><?php echo $nomproduit; ?></td>
@@ -93,22 +90,21 @@ if (
             <td style='text-align: center;'><?php echo $nom_categorie; ?></td>
             <td style='text-align: center;'>
               <div class="dropdown">
-                <button class="btn btn-sa-muted btn-sm" type="button" id="product-context-menu-<?php echo $iddd; ?>" data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
+                <button class="btn btn-sa-muted btn-sm" type="button" id="product-context-menu-<?php echo $iddd; ?>"
+                  data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
                   <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="product-context-menu-<?php echo $iddd; ?>">
                   <li>
-                    <a class="dropdown-item" href="?page=Configuration_reference_produit&amp;action=Modifier&amp;idaction=<?php echo $iddd; ?>">
-                      <i class="fas fa-eye me-2"></i>Voir
+                    <a class="dropdown-item btnDetailModal" href="#" data-id="<?php echo $iddd; ?>">
+                      <i class="fas fa-eye me-2"></i>Voir détails
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="?page=Configuration_reference_produit&amp;action=Modifier&amp;idaction=<?php echo $iddd; ?>">
+                    <a class="dropdown-item text-warning"
+                      href="index-admin.php?page=Configuration_reference_produit&action=Modifier&idaction=<?php echo $iddd; ?>">
                       <i class="fas fa-edit me-2"></i>Modifier
                     </a>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider" />
                   </li>
                   <li>
                     <a class="dropdown-item text-danger btnSupprModal" href="#" data-id="<?php echo $iddd; ?>">
@@ -119,18 +115,18 @@ if (
               </div>
             </td>
           </tr>
-        <?php
+          <?php
         }
         $req_boucle->closeCursor();
         ?>
       </tbody>
     </table>
   </div>
-  
+
   <!-- Modal container -->
   <div id="modal-container"></div>
 
-<?php
+  <?php
 } else {
   header('location: /index.html');
 }

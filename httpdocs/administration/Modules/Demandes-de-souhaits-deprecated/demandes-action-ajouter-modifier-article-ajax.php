@@ -40,31 +40,42 @@ $price = $_POST['price'];
 $type = $_POST['type'];
 
 if (isset($user)) {
-    if (isset($id)) {
-        if (isset($name)) {
-            if (isset($url)) {
-                if (isset($price)) {
-                    if ($price >= 1) {
-                        if (isset($type)) {
-                            if ($action == "ajouter") {
+    if(isset($id)){
+        if(isset($name)){
+            if(isset($url)){
+                if(isset($price)){
+                    if($price >= 1){
+                        if(isset($type)){
+                            if($action == "ajouter"){
                                 $sql_insert = $bdd->prepare("INSERT INTO membres_souhait_details
-                                (liste_id, nom, description, url, categorie, quantite, couleur, taille, prix, type)
+                                (liste_id,
+                                nom,
+                                description,
+                                url,
+                                categorie,
+                                quantite,
+                                couleur,
+                                taille,
+                                prix,
+                                type)
                                 VALUES (?,?,?,?,?,?,?,?,?,?)");
-
-                                $sql_insert->execute(array(
-                                    intval($id),
-                                    htmlspecialchars($name),
-                                    htmlspecialchars($desc),
-                                    htmlspecialchars($url),
-                                    htmlspecialchars($category),
-                                    htmlspecialchars($quantity),
-                                    htmlspecialchars($color),
-                                    htmlspecialchars($size),
-                                    htmlspecialchars($price),
-                                    htmlspecialchars($type)
-                                ));
+    
+                                $sql_insert->execute(
+                                    array(
+                                        intval($id),
+                                        htmlspecialchars($name),
+                                        htmlspecialchars($desc),
+                                        htmlspecialchars($url),
+                                        htmlspecialchars($category),
+                                        htmlspecialchars($quantity),
+                                        htmlspecialchars($color),
+                                        htmlspecialchars($size),
+                                        htmlspecialchars($price),
+                                        htmlspecialchars($type)
+                                    )
+                                );
                                 $sql_insert->closeCursor();
-                            } else if ($action == "modifier") {
+                            }else if($action == "modifier"){
                                 $sql_update = $bdd->prepare("UPDATE membres_souhait_details SET
                                 nom=?,
                                 description=?,
@@ -77,42 +88,45 @@ if (isset($user)) {
                                 type=?
                                 WHERE id=?");
 
-                                $sql_update->execute(array(
-                                    htmlspecialchars($name),
-                                    htmlspecialchars($desc),
-                                    htmlspecialchars($url),
-                                    htmlspecialchars($category),
-                                    htmlspecialchars($quantity),
-                                    htmlspecialchars($color),
-                                    htmlspecialchars($size),
-                                    htmlspecialchars($price),
-                                    htmlspecialchars($type),
-                                    intval($id)
-                                ));
+                                $sql_update->execute(
+                                    array(
+                                        htmlspecialchars($name),
+                                        htmlspecialchars($desc),
+                                        htmlspecialchars($url),
+                                        htmlspecialchars($category),
+                                        htmlspecialchars($quantity),
+                                        htmlspecialchars($color),
+                                        htmlspecialchars($size),
+                                        htmlspecialchars($price),
+                                        htmlspecialchars($type),
+                                        intval($id)
+                                    )
+                                );
                                 $sql_update->closeCursor();
                             }
 
-                            $result = array("Texte_rapport" => "Article " . ($action == "ajouter" ? "ajouté" : "modifié") . " !", "retour_validation" => "ok", "retour_lien" => "");
-                        } else {
+                            $result = array("Texte_rapport" => "Article ajouté !", "retour_validation" => "ok", "retour_lien" => "");
+                        }else{
                             $result = array("Texte_rapport" => "Type obligatoire", "retour_validation" => "non", "retour_lien" => "");
                         }
-                    } else {
+                    }else{
                         $result = array("Texte_rapport" => "Le prix doit être supérieur à 1€", "retour_validation" => "non", "retour_lien" => "");
                     }
-                } else {
+                }else{
                     $result = array("Texte_rapport" => "Prix obligatoire", "retour_validation" => "non", "retour_lien" => "");
                 }
-            } else {
+            }else{
                 $result = array("Texte_rapport" => "Url obligatoire", "retour_validation" => "non", "retour_lien" => "");
             }
-        } else {
+        }else{
             $result = array("Texte_rapport" => "Nom obligatoire", "retour_validation" => "non", "retour_lien" => "");
         }
-    } else {
+    }else{
         $result = array("Texte_rapport" => "Erreur interne", "retour_validation" => "non", "retour_lien" => "");
     }
-
-    echo json_encode($result);
+    
+    $result = json_encode($result);
+    echo $result;
 } else {
     header('location: /index.html');
 }

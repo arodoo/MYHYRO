@@ -32,262 +32,107 @@ if (
     isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 2 ||
     isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 3
 ) {
+    $idmembre = isset($_POST['idmembre']) ? $_POST['idmembre'] : '';
 
-?>
+    // Prepare the WHERE clause for filtering by member if needed
+    $where = '';
+    $params = [];
+    if (!empty($idmembre)) {
+        $where = " WHERE user_id = ? ";
+        $params[] = $idmembre;
+    }
 
-    <div style='clear: both;'></div>
-
-    <?php
-    $nom_fichier = "Membres";
-    $nom_fichier_datatable = "Membres-" . date('d-m-Y', time()) . "-$nomsiteweb";
+    $nom_fichier = "Demandes de souhaits";
+    $nom_fichier_datatable = "Demandes-de-souhaits-" . date('d-m-Y', time()) . "-$nomsiteweb";
     ?>
-    <script>
-        $(document).ready(function() {
-            $(document).on("click", "#refuseThis", function(e) {
-                datas = {
-                    id: e.target.attributes.data.nodeValue
-                }
 
-                $.post({
-                    url: '/administration/Modules/Demandes-de-souhaits/demandes-action-refuser-ajax.php',
-                    type: 'POST',
-                    data: datas,
-                    success: function(res) {
-                        res = JSON.parse(res);
-
-                        if (res.retour_validation == "ok") {
-                            popup_alert(res.Texte_rapport, "green filledlight", "#009900", "uk-icon-check");
-                            setTimeout(() => {
-                                document.location.reload();
-                            }, 1500)
-                        } else {
-                            popup_alert(res.Texte_rapport, "#CC0000 filledlight", "#CC0000", "uk-icon-times");
-                        }
-                    }
-                });
-            });
-
-            $(document).on("click", "#deleteThis", function(e) {
-                datas = {
-                    id: e.target.attributes.data.nodeValue
-                }
-
-                $.post({
-                    url: '/administration/Modules/Demandes-de-souhaits/demandes-action-supprimer-ajax.php',
-                    type: 'POST',
-                    data: datas,
-                    success: function(res) {
-                        res = JSON.parse(res);
-
-                        if (res.retour_validation == "ok") {
-                            popup_alert(res.Texte_rapport, "green filledlight", "#009900", "uk-icon-check");
-                            setTimeout(() => {
-                                document.location.reload();
-                            }, 1500)
-                        } else {
-                            popup_alert(res.Texte_rapport, "#CC0000 filledlight", "#CC0000", "uk-icon-times");
-                        }
-                    }
-                });
-            });
-
-            $('#Tableau_a').DataTable({
-                responsive: true,
-                stateSave: true,
-                dom: 'Bftipr',
-                "order": [
-                    [0, "desc"],
-                    [1, "desc"],
-                    [2, "desc"],
-                    [3, "desc"],
-                    [4, "desc"],
-                    [5, "desc"]
-                ],
-                buttons: [{
-                        extend: 'print',
-                        text: "Imprimer",
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        filename: "<?php echo "$nom_fichier_datatable"; ?>",
-                        title: "<?php echo "$nom_fichier"; ?>",
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'csv',
-                        filename: "<?php echo "$nom_fichier_datatable"; ?>",
-                        exportOptions: {
-                            columns: ':visible'
-                        }
-                    },
-                    {
-                        extend: 'colvis',
-                        text: "Colonnes visibles",
-                    }
-                ],
-                columnDefs: [{
-                    targets: '_all', // All columns
-                    orderable: false // Disable ordenation
-                }],
-                "language": {
-                    "sProcessing": "Traitement en cours...",
-                    "sSearch": "Rechercher&nbsp;:",
-                    "sLengthMenu": "Afficher _MENU_ &eacute;l&eacute;ments",
-                    "sInfo": "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-                    "sInfoEmpty": "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-                    "sInfoFiltered": "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-                    "sInfoPostFix": "",
-                    "sLoadingRecords": "Chargement en cours...",
-                    "sZeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
-                    "sEmptyTable": "Aucune donn&eacute;e disponible dans le tableau",
-                    "oPaginate": {
-                        "sFirst": "Premier",
-                        "sPrevious": "Pr&eacute;c&eacute;dent",
-                        "sNext": "Suivant",
-                        "sLast": "Dernier"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": activer pour trier la colonne par ordre croissant",
-                        "sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-                    }
-                }
-            });
-
-            ///////////////CHAMPS DE RECHERCHE SUR COLONNE
-            $('#Tableau_a tfoot .search_table').each(function() {
-                var title = $(this).text();
-                $(this).html('<input type="text" class="form-control" placeholder="' + title + '" style="width:95%; font-weight: normal;"/>');
-            });
-            var table = $('#Tableau_a').DataTable();
-            table.columns().every(function() {
-                var that = this;
-                $('input', this.footer()).on('keyup change', function() {
-                    if (that.search() !== this.value) {
-                        that.search(this.value)
-                            .draw();
-                    }
-                });
-            });
-
-
-
-           // Événement pour forcer toujours l'ordre décroissant dans la colonne ID
-            table.on('order.dt', function(e, settings) {
-                var order = settings.aaSorting;
-                if (order[0][0] === 0 && order[0][1] !== 'desc') {
-                    table.order([0, 'desc']).draw();
-                }
-            });
-
-        });
-    </script>
-
-    <table id='Tableau_a' class="display nowrap" style="text-align: center; width: 100%; margin-top: 15px;" cellpadding="2" cellspacing="2">
-
+    <table class="sa-datatables-init" data-order='[[ 0, "desc" ]]' data-sa-search-input="#table-search">
         <thead>
             <tr>
-                <th scope="col" style="text-align: center;">ID</th>
-                <th scope="col" style="text-align: center;">NOM CLIENT</th>
-                <th style="text-align: center;">TITRE</th>
-                <th style="text-align: center;">STATUT</th>
-                <th class="search_table" style="text-align: center;">CRÉÉE LE</th>
-                <th style="text-align: center; width: 100px;">GESTION</th>
+                <th>ID</th>
+                <th>CLIENT</th>
+                <th>TITRE</th>
+                <th>STATUT</th>
+                <th>DATE</th>
+                <th style="width: 90px;">ACTIONS</th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th class="search_table" style="text-align: center;">ID</th>
-                <th class="search_table" style="text-align: center;">NOM CLIENT</th>
-                <th class="search_table" style="text-align: center;">TITRE</th>
-                <th class="search_table" style="text-align: center;">STATUT</th>
-                <th class="search_table" style="text-align: center;">CRÉÉE LE</th>
-                <th style="text-align: center; width: 90px;">GESTION</th>
-            </tr>
-        </tfoot>
-        <?php
-        echo "ok";
-        echo $_POST['idmembre'];
-        echo $_GET['idaction'];
-        echo "ko";
-        ?>
-
         <tbody>
             <?php
-            ///////////////////////////////SELECT BOUCLE
+            // Query to get wishlist requests
+            $req_boucle = $bdd->prepare("SELECT ms.*, m.nom, m.prenom FROM membres_souhait ms 
+                                LEFT JOIN membres m ON ms.user_id = m.id $where ORDER BY ms.id DESC");
+            $req_boucle->execute($params);
+            while ($ligne = $req_boucle->fetch()) {
+                $id = $ligne['id'];
+                $client = $ligne['prenom'] . ' ' . $ligne['nom'];
+                $title = $ligne['titre'];
+                $created_at = date('d/m/Y', $ligne['created_at']);
 
-            if (empty($_POST['idmembre'])) {
-                $req_boucle = $bdd->prepare("SELECT * FROM membres_souhait ORDER BY id DESC");
-                $req_boucle->execute();
-            } else {
-                $req_boucle = $bdd->prepare("SELECT * FROM membres_souhait WHERE user_id=? ORDER BY id DESC");
-                $req_boucle->execute(array($_POST['idmembre']));
-            }
-
-            while ($ligne_boucle = $req_boucle->fetch()) {
-                $id = $ligne_boucle['id'];
-                $title = $ligne_boucle['titre'];
-                $statut = $ligne_boucle['statut'];
-                $created_at = $ligne_boucle['created_at'];
-                $user_id = $ligne_boucle['user_id'];
-
-                $sql_select = $bdd->prepare("SELECT * FROM membres WHERE id=?");
-                $sql_select->execute(array($user_id));
-                $ligne_select = $sql_select->fetch();
-                $sql_select->closeCursor();
-                $user_name = $ligne_select['prenom'] . " " . $ligne_select['nom'];
-            ?>
-
+                // Get status text
+                $status_text = "";
+                $status_class = "";
+                switch ($ligne['statut']) {
+                    case 0:
+                        $status_text = "En attente";
+                        $status_class = "badge-sa-warning";
+                        break;
+                    case 1:
+                        $status_text = "Traitée";
+                        $status_class = "badge-sa-success";
+                        break;
+                    case 2:
+                        $status_text = "Refusée";
+                        $status_class = "badge-sa-danger";
+                        break;
+                    default:
+                        $status_text = "Inconnue";
+                        $status_class = "badge-sa-secondary";
+                }
+                ?>
                 <tr>
-                    <td style="text-align: center;">
-                        <?= $id ?>
+                    <td><?php echo $id; ?></td>
+                    <td><?php echo $client; ?></td>
+                    <td><?php echo $title; ?></td>
+                    <td><span class="badge <?php echo $status_class; ?>"><?php echo $status_text; ?></span></td>
+                    <td><?php echo $created_at; ?></td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sa-muted btn-sm" type="button" id="wish-context-menu-<?php echo $id; ?>"
+                                data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="wish-context-menu-<?php echo $id; ?>">
+                                <li>
+                                    <a class="dropdown-item btnDetailModal" href="#" data-id="<?php echo $id; ?>">
+                                        <i class="fas fa-eye me-2"></i>Voir détails
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-warning"
+                                        href="index-admin.php?page=Demandes-de-souhaits&action=edit&idaction=<?php echo $id; ?>">
+                                        <i class="fas fa-edit me-2"></i>Modifier
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger btnSupprModal" href="#" data-id="<?php echo $id; ?>">
+                                        <i class="fas fa-trash me-2"></i>Supprimer
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </td>
-                    <td style="text-align: center;">
-                        <?= $user_name ?>
-                    </td>
-                    <td style="text-align: center;">
-                        <?= $title ?>
-                    </td>
-
-                    <td style="text-align: center;">
-                        <?php if ($statut == 1) { ?>
-                            <div class="label label-primary p-2 rounded">En cours de traitement</div>
-                        <?php } else if ($statut == 2) { ?>
-                            <span class="label label-warning p-2 rounded">À payer</span>
-                        <?php } else if ($statut == 3) { ?>
-                            <span class="label label-danger p-2 rounded">Refusée</span>
-                        <?php } else if ($statut == 4) { ?>
-                            <span class="label label-success p-2 rounded">Traité</span>
-                        <?php } ?>
-                    </td>
-                    <td style="text-align: center">
-                        <?= date("d/m/Y H:i:s", $created_at) ?>
-                    </td>
-                    <td style="text-align: center;">
-                        <a data-id=<?= $id ?> href='?page=Demandes-de-souhaits&action=Details&idaction=<?= $id ?>' title='Plus de détails'><span class='uk-icon-file-text'></span></a>
-                        <?php if ($statut == 1) { ?>
-                            <a id="refuseThis" data=<?= $id ?> href="#" title='Refuser'><span data=<?= $id ?> class='uk-icon-times'></span></a>
-                        <?php } else { ?>
-                            <a id="deleteThis" data=<?= $id ?> href="#" title='Supprimer'><span data=<?= $id ?> class='uk-icon-trash-o'></span></a>
-                        <?php } ?>
-                    </td>
-
                 </tr>
-
-            <?php
+                <?php
             }
             $req_boucle->closeCursor();
             ?>
         </tbody>
     </table>
 
-<?php } else {
+    <?php
+} else {
     header('location: /index.html');
 }
-
 ob_end_flush();
 ?>
