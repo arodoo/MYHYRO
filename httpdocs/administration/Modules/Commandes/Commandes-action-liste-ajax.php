@@ -17,6 +17,10 @@ if (
     isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 3
 ) {
     ?>
+    <div class="p-4">
+        <input type="text" placeholder="Rechercher des commandes..." 
+               class="form-control form-control--search mx-auto" id="table-search" />
+    </div>
 
     <div class="table-responsive">
         <table class="sa-datatables-init" data-order='[[ 0, "desc" ]]' data-sa-search-input="#table-search">
@@ -32,6 +36,7 @@ if (
             </thead>
             <tbody>
                 <?php
+                // Keep your existing query logic here...
                 if (empty($_POST['idmembre'])) {
                     $req_boucle = $bdd->prepare("SELECT * FROM membres_commandes WHERE type=2 AND statut!='3' ORDER BY id DESC");
                     $req_boucle->execute();
@@ -41,6 +46,7 @@ if (
                 }
 
                 while ($ligne_boucle = $req_boucle->fetch()) {
+                    // Keep your existing row rendering code...
                     $id = $ligne_boucle['id'];
                     $user_id = $ligne_boucle['user_id'];
                     $prix_total = number_format($ligne_boucle['prix_total'], 0, '.', ' ');
@@ -87,12 +93,24 @@ if (
                         </td>
                         <td><?= $created_at ?></td>
                         <td>
-                            <a href="?page=Commandes&action=Details&idaction=<?= $id ?>" class="btn btn-sm btn-primary">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="<?= $id ?>">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-sa-muted btn-sm" type="button" id="commande-context-menu-<?= $id ?>"
+                                    data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="commande-context-menu-<?= $id ?>">
+                                    <li>
+                                        <a class="dropdown-item" href="?page=Commandes&action=Details&idaction=<?= $id ?>">
+                                            <i class="fas fa-eye me-2"></i>Voir détails
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger btn-delete" href="#" data-id="<?= $id ?>">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                     <?php
@@ -104,36 +122,62 @@ if (
     </div>
 
     <script>
-        // Initialize DataTables
-        $(document).ready(function () {
+        $(document).ready(function() {
+            const template =
+                '<"sa-datatables"' +
+                '<"sa-datatables__table"t>' +
+                '<"sa-datatables__footer"' +
+                '<"sa-datatables__pagination"p>' +
+                '<"sa-datatables__controls"' +
+                '<"sa-datatables__legend"i>' +
+                '<"sa-datatables__divider">' +
+                '<"sa-datatables__page-size"l>' +
+                '>' +
+                '>' +
+                '>';
+
             const table = $('.sa-datatables-init').DataTable({
+                dom: template,
+                paging: true,
+                ordering: true,
+                info: true,
                 responsive: true,
                 language: {
-                    "sProcessing": "Traitement en cours...",
-                    "sSearch": "Rechercher :",
-                    "sLengthMenu": "Afficher _MENU_ éléments",
-                    "sInfo": "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
-                    "sInfoEmpty": "Affichage de l'élément 0 à 0 sur 0 élément",
-                    "sInfoFiltered": "(filtré de _MAX_ éléments au total)",
-                    "sInfoPostFix": "",
-                    "sLoadingRecords": "Chargement en cours...",
-                    "sZeroRecords": "Aucun élément à afficher",
-                    "sEmptyTable": "Aucune donnée disponible dans le tableau",
-                    "oPaginate": {
-                        "sFirst": "Premier",
-                        "sPrevious": "Précédent",
-                        "sNext": "Suivant",
-                        "sLast": "Dernier"
-                    },
-                    "oAria": {
-                        "sSortAscending": ": activer pour trier la colonne par ordre croissant",
-                        "sSortDescending": ": activer pour trier la colonne par ordre décroissant"
+                    search: "",
+                    searchPlaceholder: "Rechercher...",
+                    lengthMenu: "Afficher _MENU_ éléments",
+                    info: "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
+                    infoEmpty: "Affichage de l'élément 0 à 0 sur 0 élément",
+                    infoFiltered: "(filtré de _MAX_ éléments au total)",
+                    sZeroRecords: "Aucun élément à afficher",
+                    sEmptyTable: "Aucune donnée disponible dans le tableau",
+                    paginate: {
+                        first: "Premier",
+                        previous: "Précédent",
+                        next: "Suivant",
+                        last: "Dernier"
                     }
+                },
+                drawCallback: function() {
+                    $(this).find('.pagination').addClass('pagination-sm');
                 }
             });
 
+            // Search functionality
+            const searchSelector = $('#table-search');
+            if (searchSelector.length) {
+                searchSelector.off('input').on('input', function() {
+                    table.search(this.value).draw();
+                });
+
+                searchSelector.off('keypress.prevent-form-submit').on('keypress.prevent-form-submit', function(e) {
+                    return e.which !== 13;
+                });
+            }
+
             // Delete button action
-            $('.btn-delete').on('click', function () {
+            $(document).on('click', '.btn-delete', function(e) {
+                e.preventDefault();
                 const id = $(this).data('id');
 
                 if (confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
@@ -141,45 +185,16 @@ if (
                         url: '/administration/Modules/Commandes/Commandes-action-supprimer-ajax.php',
                         type: 'POST',
                         data: { id: id },
-                        success: function (res) {
+                        success: function(res) {
                             res = JSON.parse(res);
 
                             if (res.retour_validation == "ok") {
-                                // Show success message
-                                const toastContainer = $(".sa-app__toasts");
-                                const toastHTML = `
-                                <div class="toast align-items-center border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                                    <div class="d-flex">
-                                        <div class="toast-body text-success">
-                                            <strong>Succès:</strong> ${res.Texte_rapport}
-                                        </div>
-                                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                                    </div>
-                                </div>
-                            `;
-                                toastContainer.append(toastHTML);
-                                setTimeout(function () {
-                                    toastContainer.find('.toast').first().remove();
-                                    // Reload data
+                                showToast("success", "Succès", res.Texte_rapport);
+                                setTimeout(function() {
                                     location.reload();
-                                }, 3000);
+                                }, 1500);
                             } else {
-                                // Show error message
-                                const toastContainer = $(".sa-app__toasts");
-                                const toastHTML = `
-                                <div class="toast align-items-center border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                                    <div class="d-flex">
-                                        <div class="toast-body text-danger">
-                                            <strong>Erreur:</strong> ${res.Texte_rapport}
-                                        </div>
-                                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                                    </div>
-                                </div>
-                            `;
-                                toastContainer.append(toastHTML);
-                                setTimeout(function () {
-                                    toastContainer.find('.toast').first().remove();
-                                }, 3000);
+                                showToast("error", "Erreur", res.Texte_rapport);
                             }
                         }
                     });
