@@ -158,6 +158,7 @@ if (
 
 ?>
     <script>
+        // ...existing code...
         $(document).ready(function() {
 
             $(document).on("click", ".update", function() {
@@ -492,7 +493,8 @@ if (
     </script>
 
     <style>
-        #table-wrapper {
+        /* ...existing code... */
+         #table-wrapper {
             position: relative;
         }
 
@@ -774,602 +776,716 @@ if (
                     }
                 } */
     </style>
-    <div class="well well-sm" style="margin-top: 2rem; text-align: left; width: 96vw; position: absolute; top: 40vh; left: 2vw; right: 2vw; ">
+    
+    <input id="idWish" type="hidden" value="<?= $colis['id']; ?>" />
+    <input id="idMembre" type="hidden" value="<?= $colis['user_id']; ?>"/>
 
-        <div class="remboursement" style=" justify-content: space-between; margin-bottom: 2rem">
-            <div style="display: flex; flex-direction: column; height: 100%">
-                <div>
-                    <h2>Colis #<?= $colis['id'] ?></h2>
-                    <p>Historique des modifications</p>
-
-                    <div style="max-height: 15vh; overflow-y: auto; scrollbar-color: #ff9900 #dee2e6 ; padding: 1rem 2rem;">
-                        <?php
-                        ///////////////////////////////SELECT BOUCLE
-
-                        $req_boucle = $bdd->prepare("SELECT * FROM admin_colis_historique WHERE id_colis=? ORDER BY id DESC");
-                        $req_boucle->execute(array($_POST['idaction']));
-                        while ($ligne_boucle = $req_boucle->fetch()) {
-
-                            $req_select = $bdd->prepare("SELECT * FROM membres WHERE id=?");
-                            $req_select->execute(array($ligne_boucle['id_membre']));
-                            $ligne_admin = $req_select->fetch();
-                            $req_select->closeCursor();
-
-                        ?>
-                            <p> - <?= $ligne_admin['prenom'] ?> a effectué une modification le <?= date('d-m-Y à H:i', $ligne_boucle['date']) ?></p>
-                        <?php } ?>
-                    </div>
-
-                </div>
-            </div>
-            <div>
-
-                <div style="background-color: white; max-width: 60rem; border-radius: 1rem; margin-bottom: 10px;">
-                    <p style="margin-top: 1rem; margin-left: 1rem"><b>Colis</b></p>
-                    <div class="remboursement" style=" align-content: space-between; border-top: 1px solid #dfdfdf; padding: 1rem; margin-top: 1rem">
-                        <div style="margin-right: 10rem">
-                            <p style="margin-bottom: 3rem">Colis #<?= $colis['id'] ?></p>
-
-                            <p>Date : <?= date('d/m/Y à H \h i \m\i\n', $colis['created_at']) ?></p>
-                            <p>Utilisateur : <a href="?page=Membres&action=Modifier&idaction=<?= $id_membre ?>" style="color: #0174aa"><?= $pseudo_membre ?></a> </p>
-                            <p>Nom : <?= strtoupper($nom_membre) ?> <?= $prenom_membre ?></p>
-                            <p>Type d'abonnement : <?= $abonnement_membre ?></p>
-                        </div>
-                        <div style="display: inline-block;  align-self: flex-end; ">
-                            <p>Numéro de paiement : </p>
-                            <p>Attente paiement: </p>
-                            <p>Code transaction: xxxxxx</p>
-                        </div>
-                    </div>
-
-
-                </div>
-
-
-                <?php
-                if (!empty($commande_lie["id"])) {
-                ?>
-                    <a href='?page=Commandes&action=Details&idaction=<?= $commande_lie["id"] ?>'>Ce coli est rattaché à une commande, cliquez ici pour la traiter</a>
-                <?php
-                }
-                ?>
-
-            </div>
+    <!-- Details view -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h5 class="card-title">Colis #<?= $colis['id'] ?></h5>
         </div>
-
-        <input id="idWish" type="hidden" disabled value="<?= $colis['id']; ?>" />
-
-        <div style="padding: 2rem">
-
-            <button id="annuler_colis" class="btn <?= $colis['statut'] == 13 ? "btn-danger" : "btn-primary" ?> update" data-annuler="oui" style="margin-right: 1rem" <?= $colis['statut'] == 2 || $colis['statut'] == 13 ? "disabled" : "" ?>>
-                <?= $colis['statut'] == 13 ? "colis annulée" : "Annuler colis" ?>
-            </button>
-
-            <h4 style="color: #ff9900; font-weight: bold;">PRODUITS</h4>
-            <button id="new_prix" class="btn btn-primary" style="margin-right: 1rem">
-                valider
-            </button>
-            <div class="poids" style=" display: flex;">
-                <div>
-                    <label for="nombre_de_kg" style="font-weight: normal;">Poids du colis</label>
-                    <input class="form-control" type="text" value="<?= $colis['poids'] ?>" name="poids" id="poids" style="width: 10rem;" disabled>
-                </div>
-                <div style="margin-left: 5rem;">
-                    <label for="poids_reel" style="font-weight: normal;">Poids réel</label>
-                    <input class="form-control" type="text" value="<?= $colis['poids_reel'] ?>" name="poids_reel" id="poids_reel" style="width: 10rem;">
-                </div>
-
-            </div>
-
-            <!--            max-height: 20vh; overflow-y: auto; scrollbar-color: #ff9900 #dee2e6 ;-->
-
-
-
-
-            <div id="table-wrapper">
-                <div id="table-scroll">
-                    <form id="form-produits" method='post' action='#' enctype='multipart/form-data'>
-                        <input id="id" name="idColis" type="hidden" value="<?= $colis['id']; ?>" />
-                        <table id='Tableau_a2' class="display nowrap table-responsive"
-                            style="text-align: center; width: 100%; margin-top: 15px; font-size: 11px" cellpadding="2" cellspacing="2">
-                            <thead>
-                                <tr>
-                                    <th><span class="textthead" style="text-align: center">Action</span></th>
-                                    <th><span class="textthead" style="text-align: center">Categorie</span></th>
-                                    <th><span class="textthead" style="text-align: center">Quantité</span></th>
-                                    <th><span class="textthead" style="text-align: center">Valeur Unitaire TTC €</span></th>
-                                    <th><span class="textthead" style="text-align: center">Valeur Unitaire XAF</span></th>
-                                    <th><span class="textthead" style="text-align: center">Total XAF</span></th>
-                                    <th><span class="textthead" style="text-align: center">Disponibilité</span></th>
-                                    <th><span class="textthead" style="text-align: center">Nom du produit</span></th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6>Informations client</h6>
+                        <p>Client: <a href="?page=Membres&action=Modifier&idaction=<?= $id_membre ?>" class="text-decoration-none"><?= $prenom_membre ?> <?= strtoupper($nom_membre) ?></a></p>
+                        <p>Type d'abonnement: <?= $abonnement_membre ?></p>
+                        
+                        <div class="mt-4">
+                            <p>Historique des modifications</p>
+                            <div class="ps-3 pe-3 py-2" style="max-height: 15vh; overflow-y: auto;">
                                 <?php
-                                ///////////////////////////////SELECT BOUCLE
-                                $even_odd_class = '';
-                                $req_boucle = $bdd->prepare("SELECT * FROM membres_colis_details WHERE colis_id=? ORDER BY id DESC");
+                                $req_boucle = $bdd->prepare("SELECT * FROM admin_colis_historique WHERE id_colis=? ORDER BY id DESC");
                                 $req_boucle->execute(array($_POST['idaction']));
                                 while ($ligne_boucle = $req_boucle->fetch()) {
-                                    $even_odd_class = ($even_odd_class == 'even') ? 'odd' : 'even';
-                                    if ($ligne_boucle['annule'] == 'oui') {
-                                        $alert = "oui";
-                                    }
-                                    $prix = floatval($ligne_boucle['prix']);
-                                    $quantite = intval($ligne_boucle['quantite']);
-                                    $prix_reel = floatval($ligne_boucle['prix_reel']);
+                                    $req_select = $bdd->prepare("SELECT * FROM membres WHERE id=?");
+                                    $req_select->execute(array($ligne_boucle['id_membre']));
+                                    $ligne_admin = $req_select->fetch();
+                                    $req_select->closeCursor();
                                 ?>
-                                    <tr class="line<?= $ligne_boucle['id'] ?> <?= $even_odd_class ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>">
-                                        <td style="text-align: center;">
-                                            <div style="display: flex; text-align: center; width: 100%; align-content: center; justify-content: center">
-                                                <i class="<?= $ligne_boucle['annule'] == 'oui' ? "uk-icon-check green" : "uk-icon-times red" ?> annuler" style="cursor: pointer; margin-right: 2px" data-id="<?= $ligne_boucle['id'] ?>" data-champ="annule"></i>
-                                                <input type="hidden" id="annule_champ<?= $ligne_boucle['id'] ?>" name="annule<?= $ligne_boucle['id'] ?>" value="<?= $ligne_boucle['annule'] ?>" style="width: 2.5rem; height: 2.125rem;">
-                                            </div>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <label for="categorie">
-                                                <select class="modif_produit categorie-prod" data-id="<?= $ligne_boucle['id'] ?>" data-champ="categorie" style="width: 20rem; padding: 0 height: 2.125rem;" name="categorie<?= $ligne_boucle['id'] ?>">
-                                                    <?php
-                                                    $req_boucle2 = $bdd->prepare("SELECT * FROM categories ORDER BY nom_categorie ASC");
-                                                    $req_boucle2->execute();
-                                                    while ($ligne_boucle2 = $req_boucle2->fetch()) {
-                                                    ?>
-                                                        <option value="<?= $ligne_boucle2['nom_categorie'] ?>" type="<?= $ligne_boucle2['type'] ?>" <?= $ligne_boucle2['nom_categorie'] == $ligne_boucle['categorie'] ? 'selected' : '' ?>>
-                                                            <?= $ligne_boucle2['nom_categorie'] ?>
-                                                        </option>
-                                                    <?php
-                                                    }
-                                                    $req_boucle2->closeCursor();
-                                                    ?>
-                                                </select>
-                                            </label>
-                                        </td>
-                                        <td style="text-align: center; ">
-                                            <input class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" type="text" id="quantite" data-id="<?= $ligne_boucle['id'] ?>" data-champ="quantite" name="quantite<?= $ligne_boucle['id'] ?>" value="<?= $quantite ?>" style="width: 2.5rem; height: 2.125rem;">
-                                        </td>
-                                        <td style="text-align: center; min-width: 144px; ">
-                                            <input type="text" id="<?= $ligne_boucle['id'] ?>-prix_u" class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" name="prix_u" value="<?= round($prix * 0.00152449, 2); ?>" style="height: 2.125rem; width: 10rem;" disabled>
-                                            <button type="button" onclick="copyPrice('<?= $ligne_boucle['id'] ?>-prix_u', '<?= $ligne_boucle['id'] ?>-prix_r')" style="width:2rem;" class="btn-primary">
-                                                <i class="uk-icon-eur"></i>
-                                            </button>
-                                        </td>
-                                        <td style="text-align: center; ">
-                                            <input type="text" id="<?= $ligne_boucle['id'] ?>-prix_u_xaf" class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" name="prix_u_xaf" value="<?= number_format($prix, 0, '.', ' '); ?>" disabled style="height: 2.125rem; width: 10rem;">
-                                        </td>
-                                        <td style="text-align: center; ">
-                                            <input type="text" id="total_xaf" class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" name="total_xaf" value="<?= number_format($prix * $quantite, 0, '.', ' ') ?>" disabled style="height: 2.125rem; width: 10rem;">
-                                        </td>
-                                        <td style="text-align: center; ">
-                                            <label for="disponibilite">
-                                                <select style="padding: 0; height: 2.125rem;" class="modif_produit <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "remplir" ?>" name="disponibilite<?= $ligne_boucle['id'] ?>" data-champ="disponibilite" data-id="<?= $ligne_boucle['id'] ?>">
-                                                    <option></option>
-                                                    <option value="Disponible" <?= $ligne_boucle['disponibilite'] == 'Disponible' ? "selected" : "" ?>>Disponible</option>
-                                                    <option value="Non disponible" <?= $ligne_boucle['disponibilite'] == 'Non disponible' ? "selected" : "" ?>>Non disponible</option>
-                                                </select>
-                                            </label>
-                                        </td>
-                                        <td style="text-align: center; padding-bottom: 3rem; min-width: 123px;">
-                                            <label for="nom_produit"> </label>
-                                            <input class="modif_produit <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "remplir" ?>" type="text" id="nom_produit" data-id="<?= $ligne_boucle['id'] ?>" data-champ="nom" name="nom<?= $ligne_boucle['id'] ?>" value="<?= $ligne_boucle['nom'] ?>" style="height: 2.125rem;">
-                                        </td>
-                                    </tr>
-                                    <tr class="line<?= $ligne_boucle['id'] ?> <?= $even_odd_class ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" style="border-bottom: 1px solid black;">
-                                        <td></td>
-                                        <td></td>
-                                        <td>
-                                            <b>Valeur Réel</b>
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <input class="modif_produit <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "remplir" ?>" type="text" id="<?= $ligne_boucle['id'] ?>-prix_r" data-id="<?= $ligne_boucle['id'] ?>" data-champ="prix_reel" name="prix_reel<?= $ligne_boucle['id'] ?>" value="<?= round($prix_reel * 0.00152449, 2); ?>" style="width: 10rem;">
-                                        </td>
-                                        <td style="text-align: center;">
-                                            <input class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" type="text" id="prix_r_xaf" name="prix_r_xaf" value="<?= number_format($prix_reel, 0, '.', ' '); ?>" disabled style="width: 10rem;">
-                                        </td>
-                                        <td style="text-align: center; ">
-                                            <input class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "annule" : "" ?>" type="text" id="prix_r_fcfa" name="prix_r_fcfa" value="<?= number_format(round($prix_reel * $quantite), 0, '.', ' '); ?>" disabled style="width: 10rem;">
-                                        </td>
-                                        <td></td>
-                                        <td></td>
-                                        <!-- <td></td>
-                                        <td></td> -->
-                                    </tr>
-                                <?php
-                                }
-                                $req_boucle->closeCursor();
-
-                                $sous_total = floatval($colis['sous_total']);
-                                $prix_total = floatval($colis['prix_total']);
-
-                                if ($colis['douane_a_la_liv'] == 'oui') {
-                                    $prix_expedition = floatval($colis['dette_montant']);
-                                    $prix_total += floatval($colis['dette_montant']);
-                                } else {
-                                    $prix_expedition = floatval($colis['prix_expedition']);
-                                }
-                                ?>
-                            </tbody>
-                        </table>
-                    </form>
-
+                                    <p> - <?= $ligne_admin['prenom'] ?> a effectué une modification le <?= date('d-m-Y à H:i', $ligne_boucle['date']) ?></p>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div>
-                    <?= $colis['comment'] ? 'Commantaire : ' . $colis['comment'] : ''; ?>
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <div class="card">
+                            <div class="card-body border-top">
+                                <div class="row">
+                                    <div class="col-lg-7">
+                                        <p class="mb-4">Colis #<?= $colis['id'] ?></p>
+                                        <p>Date : <?= date('d/m/Y à H \h i \m\i\n', $colis['created_at']) ?></p>
+                                        <p>Utilisateur : <a href="?page=Membres&action=Modifier&idaction=<?= $id_membre ?>" class="text-primary"><?= $pseudo_membre ?></a></p>
+                                        <p>Nom : <?= strtoupper($nom_membre) ?> <?= $prenom_membre ?></p>
+                                        <p>Type d'abonnement : <?= $abonnement_membre ?></p>
+                                    </div>
+                                    <div class="col-lg-5 align-self-end">
+                                        <p>Numéro de paiement : </p>
+                                        <p>Attente paiement: </p>
+                                        <p>Code transaction: xxxxxx</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <?php if (!empty($commande_lie["id"])) { ?>
+                            <a href='?page=Commandes&action=Details&idaction=<?= $commande_lie["id"] ?>' class="btn btn-link">Ce coli est rattaché à une commande, cliquez ici pour la traiter</a>
+                        <?php } ?>
+                        
+                        <div class="mt-4 d-flex">
+                            <button id="annuler_colis" class="btn <?= $colis['statut'] == 13 ? "btn-danger" : "btn-primary" ?> update me-2" 
+                                data-annuler="oui" <?= $colis['statut'] == 2 || $colis['statut'] == 13 ? "disabled" : "" ?>>
+                                <?= $colis['statut'] == 13 ? "Colis annulé" : "Annuler colis" ?>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
             </div>
-            <br>
-            <div style="display: flex;">
-
-                <div>
-                    <b>
-                        <!-- <div>
-                            Total des produits : <?= number_format($sous_total, 0, '.', ' '); ?> F CFA
-                            (<?= round($sous_total * 0.00152449, 2); ?>€)
-                        </div>
-
-                        <div>
-                            Frais de livraison : <?= number_format($colis['frais_livraison'], 0, '.', ' '); ?> F CFA
-                            (<?= round($colis['frais_livraison'] * 0.00152449, 2); ?>€)
-                        </div>
-
-                        <div>
-                            Frais de gestion : <?= number_format($colis['frais_gestion'], 0, '.', ' '); ?> F CFA
-                            (<?= round($colis['frais_gestion'] * 0.00152449, 2); ?>€)
-                        </div>
-
-
-                        <div>
-                            TVA : <?= number_format($colis['tva'], 0, '.', ' '); ?> F CFA
-                            (<?= round($colis['tva'] * 0.00152449, 2); ?>€)
-                        </div>
-
-                        <div>
-                            Douane et transport : <?= number_format($prix_expedition, 0, '.', ' '); ?> F CFA
-                            (<?= round($prix_expedition * 0.00152449, 2); ?>€)
-                        </div> -->
-
-                        <div>
-                            Total du colis : <?= number_format($prix_total, 0, '.', ' '); ?> F CFA
-                            (<?= round($prix_total * 0.00152449, 2); ?>€)
-                        </div>
-                    </b>
-                </div>
-
-            </div>
-            <br>
         </div>
-
-
-        <div style="border-top: 1px solid #dddddd; padding: 2rem">
-            <h4 style="color: #ff9900; font-weight: bold;">SUIVI DU COLIS</h4>
-
-            <div class="suivi-commande" style="display: flex;">
-                <div class="commande-etape1" style=" padding-left: 1rem; padding-right: 2rem;">
-                    <div style="padding-right: 2rem; border-right: 1px solid #dfdfdf;">
-                        <div style="display: flex; ">
-                            <div>
-                                <label for="statut" style="font-weight: normal;">Etape1 : Suivi achat</label>
-                                <select id="statut" name="statut" class="form-control">
-                                    <option value=""></option>
-                                    <?php
-                                    $req_boucle = $bdd->prepare("SELECT * FROM configurations_suivi_achat where type=3");
-                                    $req_boucle->execute();
-                                    while ($ligne_boucle = $req_boucle->fetch()) {
-                                    ?>
-                                        <option value="<?= $ligne_boucle['id'] ?>" <?php if ($colis['statut'] == $ligne_boucle['id']) { ?> selected <?php } ?>><?= $ligne_boucle['nom_suivi'] ?></option>
-                                    <?php
-                                    }
-                                    $req_boucle->closeCursor();
-                                    ?>
-                                </select>
-                            </div>
-
-                            <div style="margin-left: 1rem">
-                                <label for="statut_expedition" style="font-weight: normal;">Etape 2 : Suivi expédition</label> <select
-                                    id="statut_expedition" name="statut_expedition" class="form-control" style="">
-                                    <option value=""></option>
-                                    <?php
-                                    $req_boucle = $bdd->prepare("SELECT * FROM configurations_suivi_expedition where type = 3");
-                                    $req_boucle->execute();
-                                    while ($ligne_boucle = $req_boucle->fetch()) {
-                                    ?>
-                                        <option value="<?= $ligne_boucle['id'] ?>" <?php if ($colis['statut_expedition'] == $ligne_boucle['id']) { ?> selected <?php } ?>><?= $ligne_boucle['nom_suivi'] ?></option>
-                                    <?php
-                                    }
-                                    $req_boucle->closeCursor();
-                                    ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div style="margin-top: 6rem">
-                            <label for="message" style="font-weight: normal;">Messages prédéfinis</label>
-
-                            <select id="message" name="message" class="form-control" style="">
-                                <option value=""></option>
-                                <?php
-                                $req_boucle = $bdd->prepare("SELECT * FROM configurations_messages_predefini where type is null");
-                                $req_boucle->execute();
-                                while ($ligne_boucle = $req_boucle->fetch()) {
-                                ?>
-                                    <option value="<?= $ligne_boucle['id'] ?>" <?php if ($colis['message'] == $ligne_boucle['id']) { ?> selected <?php } ?>><?= $ligne_boucle['message'] ?></option>
-                                <?php
-                                }
-                                $req_boucle->closeCursor();
-                                ?>
-                            </select>
-                        </div>
+    </div>
+    
+    <!-- Products section -->
+    <div class="card mb-5">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="card-title">Produits</h5>
+            <button id="new_prix" class="btn btn-primary">Valider</button>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label" for="poids">Poids du colis</label>
+                        <input class="form-control" type="text" value="<?= $colis['poids'] ?>" name="poids" id="poids" disabled>
                     </div>
-
-                    <div style="margin-top: 5rem; display: flex; flex-direction: column; justify-content: flex-end; padding-right: 2rem;">
-                        <div style="display: flex; align-items: center; justify-content: flex-end">
-                            <label for="reduction" style="margin-right: 1rem; font-weight: normal;">Réduction</label>
-                            <input class="form-control" type="text" name="reduction" value="<?= $colis['prix_reduction'] ?>" id="reduction" style="width: 10rem;" disabled>
-                        </div>
-
-                        <div style="display: flex; justify-content: flex-end; align-items: flex-start; margin-top: 1rem;">
-                            <p style="margin-right: 1rem; font-weight: normal;">Douane à la livraison</p>
-                            <input type="radio" id="oui" name="douane_a_la_livraison" value="oui" style="margin-left: 1rem" <?php echo $colis['douane_a_la_liv'] == 'oui' ? 'checked' : ''; ?> disabled>
-                            <label for="oui" style="margin-left:0.5rem; font-weight: normal;">Oui</label>
-                            <input type="radio" id="non" name="douane_a_la_livraison" value="non" style="margin-left: 1rem" <?php echo $colis['douane_a_la_liv'] != 'oui' ? 'checked' : ''; ?> disabled>
-                            <label for="non" style="margin-left:0.5rem; font-weight: normal;">Non</label><br>
-                        </div>
-
-
-                        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-                            <label for="prix_expedition" style="margin-right: 1rem; font-weight: normal;">Montant de la douane et transport</label>
-                            <input class="form-control" type="text" name="prix_expedition" id="prix_expedition" style="width: 10rem;" value=" <?php echo $colis['douane_a_la_liv'] == 'oui' ? $colis['dette_montant'] : $colis['prix_expedition']; ?>" disabled>
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-top: 5rem;">
-                            <label for="montant_a_payer" style="margin-right: 1rem; font-weight: normal;">Montant à payer</label>
-                            <input class="form-control" type="text" name="montant_a_payer" id="montant_a_payer" style="width: 10rem;" value="<?= number_format($prix_total, 0, '.', ' ') ?>" disabled>
-                        </div>
+                    <div class="col-md-6 col-lg-3">
+                        <label class="form-label" for="poids_reel">Poids réel</label>
+                        <input class="form-control" type="text" value="<?= $colis['poids_reel'] ?>" name="poids_reel" id="poids_reel">
                     </div>
-
-
-
-
                 </div>
-                <div class="commentaire-livraison" style=" padding-left: 5rem; padding-right: 2rem;">
-                    <div>
-                        <label for="commentaire_livraison" style="font-weight: normal;">Commentaire livraison</label>
-                        <br>
-                        <textarea class="form-control" style="width: 100%; height: 15rem; resize: none" name="commentaire_livraison" id="commentaire_livraison"><?= $colis['commentaire_livraison']; ?></textarea>
-                    </div>
+            </div>
 
-
-                    <div style="margin-top: 5rem;">
-
-                        <div style="display: flex; align-items: center">
-                            <label for="code_de_reduction" style="margin-right: 1rem; font-weight: normal;">Code de réduction</label>
-                            <input class="form-control" type="text" value="<?= $colis['code_promo'] ?>" name="code_de_reduction" id="code_de_reduction" style="width: 10rem;" disabled>
-                        </div>
-
-                        <div class="suivi-kg" style="display: flex;flex-wrap: wrap; margin-top: 11rem; align-content: center; ">
-
-                            <div class="margin-kg" style="margin-right: 1rem">
-                                <label for="nombre_de_kg" style="font-weight: normal;">Nombre de Kg</label>
-                                <input class="form-control" type="text" value="<?= $colis['poids'] ?>" name="poids" id="poids" style="width: 10rem;" disabled>
-                            </div>
-                            <div class="margin-kg" style="margin-right: 5rem">
-                                <label for="prix_du_kg" style="font-weight: normal;">Prix du Kg</label>
-                                <input class="form-control" type="text" value="<?= round($prix_kilo_colis / 0.00152449) ?>" name="prix_du_kg" id="prix_du_kg" style="width: 10rem;" disabled>
-                            </div>
-                            <div class="margin-kg" style="margin-right: 1rem">
-                                <label for="douane_et_transport_reel" style="font-weight: normal;">Douane et transport réel</label>
-                                <input class="form-control" type="text" name="douane_et_transport_reel" value="" id="douane_et_transport_reel" style="width: 10rem;" disabled>
-                            </div>
-                            <div>
-                                <label for="ecart" style="font-weight: normal;">Ecart</label>
-                                <input class="form-control" type="text" name="ecart" id="ecart" value="" style="width: 10rem;" disabled>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-                <div class="voir-facture" style=" display: flex; flex-direction: column; justify-content: center; align-content: center; align-items: center">
-
-                    <button class="btn btn-primary button-feacture" style="height: 4rem;">
-                        Voir la facture
-                    </button>
-
-                    <div class="dates input-expedition" style="align-content: center; justify-content: space-around;">
-                        <div style="margin-right: 1rem">
-                            <label for="lot_expedition" style="font-weight: normal;">Lot d'expédition</label>
-                            <input class="form-control" type="text" value="<?= $colis['lot_expedition'] ?>" name="lot_expedition" id="lot_expedition" style="width: 10rem;">
-                        </div>
-                        <div>
+            <!-- Product table -->
+            <form id="form-produits" method="post" action="#">
+                <input id="id" name="idColis" type="hidden" value="<?= $colis['id']; ?>" />
+                <div class="table-responsive">
+                    <table id="Tableau_a2" class="sa-datatables-table sa-datatables-table--hover table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Catégorie</th>
+                                <th>Quantité</th>
+                                <th>Valeur Unitaire TTC €</th>
+                                <th>Valeur Unitaire XAF</th>
+                                <th>Total XAF</th>
+                                <th>Disponibilité</th>
+                                <th>Nom du produit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <?php
-                            if ($colis['date_envoi'] != null) {
-                                $date_envoi = date('Y-m-d', $colis['date_envoi']);
+                            $even_odd_class = '';
+                            $req_boucle = $bdd->prepare("SELECT * FROM membres_colis_details WHERE colis_id=? ORDER BY id DESC");
+                            $req_boucle->execute(array($_POST['idaction']));
+                            while ($ligne_boucle = $req_boucle->fetch()) {
+                                $even_odd_class = ($even_odd_class == 'even') ? 'odd' : 'even';
+                                if ($ligne_boucle['annule'] == 'oui') {
+                                    $alert = "oui";
+                                }
+                                $prix = floatval($ligne_boucle['prix']);
+                                $quantite = intval($ligne_boucle['quantite']);
+                                $prix_reel = floatval($ligne_boucle['prix_reel']);
+                            ?>
+                                <tr class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>">
+                                    <td>
+                                        <i class="<?= $ligne_boucle['annule'] == 'oui' ? "fas fa-check text-success" : "fas fa-times text-danger" ?> annuler" 
+                                           data-id="<?= $ligne_boucle['id'] ?>" data-champ="annule"></i>
+                                        <input type="hidden" id="annule_champ<?= $ligne_boucle['id'] ?>" name="annule<?= $ligne_boucle['id'] ?>" 
+                                               value="<?= $ligne_boucle['annule'] ?>">
+                                    </td>
+                                    <td>
+                                        <select class="form-select modif_produit categorie-prod" data-id="<?= $ligne_boucle['id'] ?>" data-champ="categorie" name="categorie<?= $ligne_boucle['id'] ?>">
+                                            <?php
+                                            $req_boucle2 = $bdd->prepare("SELECT * FROM categories ORDER BY nom_categorie ASC");
+                                            $req_boucle2->execute();
+                                            while ($ligne_boucle2 = $req_boucle2->fetch()) {
+                                            ?>
+                                                <option value="<?= $ligne_boucle2['nom_categorie'] ?>" type="<?= $ligne_boucle2['type'] ?>" <?= $ligne_boucle2['nom_categorie'] == $ligne_boucle['categorie'] ? 'selected' : '' ?>>
+                                                    <?= $ligne_boucle2['nom_categorie'] ?>
+                                                </option>
+                                            <?php
+                                            }
+                                            $req_boucle2->closeCursor();
+                                            ?>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input class="form-control line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>" 
+                                               type="text" id="quantite" data-id="<?= $ligne_boucle['id'] ?>" 
+                                               data-champ="quantite" name="quantite<?= $ligne_boucle['id'] ?>" value="<?= $quantite ?>">
+                                    </td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="text" id="<?= $ligne_boucle['id'] ?>-prix_u" 
+                                                   class="form-control line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>" 
+                                                   name="prix_u" value="<?= round($prix * 0.00152449, 2); ?>" disabled>
+                                            <button type="button" onclick="copyPrice('<?= $ligne_boucle['id'] ?>-prix_u', '<?= $ligne_boucle['id'] ?>-prix_r')" 
+                                                    class="btn btn-primary btn-sm">
+                                                <i class="fas fa-euro-sign"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="<?= $ligne_boucle['id'] ?>-prix_u_xaf" 
+                                               class="form-control line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>" 
+                                               name="prix_u_xaf" value="<?= number_format($prix, 0, '.', ' '); ?>" disabled>
+                                    </td>
+                                    <td>
+                                        <input type="text" id="total_xaf" 
+                                               class="form-control line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>" 
+                                               name="total_xaf" value="<?= number_format($prix * $quantite, 0, '.', ' ') ?>" disabled>
+                                    </td>
+                                    <td>
+                                        <select class="form-select modif_produit <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "remplir" ?>" 
+                                                name="disponibilite<?= $ligne_boucle['id'] ?>" data-champ="disponibilite" data-id="<?= $ligne_boucle['id'] ?>">
+                                            <option></option>
+                                            <option value="Disponible" <?= $ligne_boucle['disponibilite'] == 'Disponible' ? "selected" : "" ?>>Disponible</option>
+                                            <option value="Non disponible" <?= $ligne_boucle['disponibilite'] == 'Non disponible' ? "selected" : "" ?>>Non disponible</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input class="form-control modif_produit <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "remplir" ?>" 
+                                               type="text" id="nom_produit" data-id="<?= $ligne_boucle['id'] ?>" 
+                                               data-champ="nom" name="nom<?= $ligne_boucle['id'] ?>" value="<?= $ligne_boucle['nom'] ?>">
+                                    </td>
+                                </tr>
+                                <tr class="line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>">
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <b>Valeur Réel</b>
+                                    </td>
+                                    <td>
+                                        <input class="form-control modif_produit <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "remplir" ?>" 
+                                               type="text" id="<?= $ligne_boucle['id'] ?>-prix_r" data-id="<?= $ligne_boucle['id'] ?>" 
+                                               data-champ="prix_reel" name="prix_reel<?= $ligne_boucle['id'] ?>" value="<?= round($prix_reel * 0.00152449, 2); ?>">
+                                    </td>
+                                    <td>
+                                        <input class="form-control line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>" 
+                                               type="text" id="prix_r_xaf" name="prix_r_xaf" value="<?= number_format($prix_reel, 0, '.', ' '); ?>" disabled>
+                                    </td>
+                                    <td>
+                                        <input class="form-control line<?= $ligne_boucle['id'] ?> <?= $ligne_boucle['annule'] == 'oui' ? "text-decoration-line-through" : "" ?>" 
+                                               type="text" id="prix_r_fcfa" name="prix_r_fcfa" 
+                                               value="<?= number_format(round($prix_reel * $quantite), 0, '.', ' '); ?>" disabled>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            <?php
+                            }
+                            $req_boucle->closeCursor();
+
+                            $sous_total = floatval($colis['sous_total']);
+                            $prix_total = floatval($colis['prix_total']);
+
+                            if ($colis['douane_a_la_liv'] == 'oui') {
+                                $prix_expedition = floatval($colis['dette_montant']);
+                                $prix_total += floatval($colis['dette_montant']);
+                            } else {
+                                $prix_expedition = floatval($colis['prix_expedition']);
                             }
                             ?>
-                            <label for="date_envoi" style="font-weight: normal;">Date d'envoi</label>
-                            <input class="form-control" type="date" value="<?= $date_envoi ?>" name="date_envoi" id="date_envoi" style="width: 14rem;">
-                        </div>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            
+            <?php if ($colis['comment']) { ?>
+                <div class="mt-3 alert alert-info">
+                    Commantaire : <?= $colis['comment'] ?>
+                </div>
+            <?php } ?>
 
+            <div class="mt-4">
+                <div class="fw-bold">
+                    <div>
+                        Total du colis : <?= number_format($prix_total, 0, '.', ' '); ?> F CFA
+                        (<?= round($prix_total * 0.00152449, 2); ?>€)
                     </div>
                 </div>
             </div>
-
-
         </div>
-
-        <div style="border-top: 1px solid #dddddd; padding: 2rem;">
-            <h4 style="color: #ff9900; font-weight: bold;">MODE DE LIVRAISON ET PAIEMENT</h4>
-
-            <div class="paiement">
-                <div class="paiement-element" style="border-right: 1px solid #dfdfdf; padding-left: 1rem; padding-right: 2rem;">
-                    <h5 style="font-weight: bold;">Mode de livraison</h5>
-
-
-                    <?php
-
-                    $sql_select = $bdd->prepare('SELECT * from configurations_livraisons_gabon WHERE id=?');
-                    $sql_select->execute(array(intval($colis['id_livraison'])));
-                    $livraison = $sql_select->fetch();
-                    $sql_select->closeCursor();
-
-                    $sql_all = $bdd->prepare("SELECT * FROM `configurations_livraisons_gabon` WHERE `activer` = ?");
-                    $sql_all->execute(array('oui'));
-
-                    while ($row = $sql_all->fetch()) {
-                        $checked = ($row['id'] == $livraison['id']) ? 'checked' : '';
-                        echo '<input type="radio" id="' . $row['id'] . '" name="mode_de_livraison" value="' . $row['nom_livraison'] . '" ' . $checked . ' disabled>';
-                        echo '<label for="' . $row['id'] . '" style="font-weight:normal; margin-left:0.5rem;">' . $row['nom_livraison'] . '</label><br>';
-                    }
-                    $sql_all->closeCursor();
-                    ?>
-                </div>
-
-
-                <div class="paiement-element2" style="padding-left: 2rem; padding-right: 2rem; border-right: 1px solid #dfdfdf;">
-                    <h5 style="font-weight: bold">Mode de paiement</h5>
-
-
-                    <?php
-
-                    $sql_select = $bdd->prepare('SELECT * from configurations_modes_paiement WHERE id=?');
-                    $sql_select->execute(array(intval($colis['id_paiement'])));
-                    $paiement = $sql_select->fetch();
-                    $sql_select->closeCursor();
-
-                    $sql_all = $bdd->prepare("SELECT * FROM `configurations_modes_paiement` WHERE `statut_mode` = ?");
-                    $sql_all->execute(array('oui'));
-
-                    while ($row = $sql_all->fetch()) {
-                        $checked = ($row['id'] == $paiement['id']) ? 'checked' : '';
-                        echo '<input type="radio" id="' . $row['id'] . '" name="mode_de_paiement" value="' . $row['nom_mode'] . '" ' . $checked . ' disabled>';
-                        echo '<label for="' . $row['id'] . '" style="font-weight:normal; margin-left:0.5rem;">' . $row['nom_mode'] . '</label><br>';
-                    }
-                    $sql_all->closeCursor();
-                    ?>
-
-                </div>
-
-
-                <div class="paiement-element2" style="padding-left: 2rem; padding: auto; border-right: 1px solid #dfdfdf;">
-                    <h5 style="font-weight: bold;">En plusieurs fois</h5>
-
-
-                    <?php
-
-                    $sql_select = $bdd->prepare('SELECT * from configurations_modes_paiement_plusieurs_fois WHERE id=?');
-                    $sql_select->execute(array(
-                        intval($colis['id_paiement_pf'])
-                    ));
-                    $paiement = $sql_select->fetch();
-                    $sql_select->closeCursor();
-
-                    $sql_all = $bdd->prepare("SELECT * FROM `configurations_modes_paiement_plusieurs_fois`");
-                    $sql_all->execute();
-
-                    while ($row = $sql_all->fetch()) {
-                        $checked = ($row['id'] == $paiement['id']) ? 'checked' : '';
-                        echo '<input type="radio" id="' . $row['id'] . '" name="plusieurs_fois" value="' . $row['nom'] . '" ' . $checked . ' disabled>';
-                        echo '<label for="' . $row['id'] . '" style="font-weight:normal; margin-left:0.5rem;">' . $row['nom'] . '</label><br>';
-                    }
-                    $sql_all->closeCursor();
-                    ?>
-
-                </div>
-                <div style="padding-left: 2rem; padding-right: 1rem;">
-                    <div class="adresse">
-                        <div style='text-align: left;'>
-                            <h5 style="margin-bottom: 1rem; font-weight: bold;">Adresse de facturation</h5>
-                            <div id="text-fac" style="border: #80808070 1px solid;  padding: 1rem; width: 25rem; min-height: 120px; max-height: 150px;">
-                                <?= nl2br($colis['adresse_fac'])  ?>
-
-                            </div>
-                            <textarea style="display: none; border: #80808070 1px solid;  padding: 1rem; width: 25rem; min-height: 120px; max-height: 150px;" name="" id="adresse_fac"><?= str_replace("<br>", "\n", $colis['adresse_fac']) ?></textarea>
-                            <div style="display: flex; align-content: center; justify-content: flex-end; margin-top: 1rem;">
-                                <button class="btn btn-primary modif-fac">
-                                    Modifier
-                                </button>
-                            </div>
-                        </div>
-                        <div style='text-align: left; margin-left: 2rem; '>
-                            <h5 style="margin-bottom: 1rem; font-weight:bold;">Adresse de livraison</h5>
-                            <div id="text-liv" style="border: #80808070 1px solid;  padding: 1rem; width: 25rem; min-height: 120px; max-height: 150px;">
-                                <?= nl2br($colis['adresse_liv'])   ?>
-                            </div>
-                            <textarea style="display: none; border: #80808070 1px solid;  padding: 1rem; width: 25rem; min-height: 120px; max-height: 150px;" name="" id="adresse_liv"><?= str_replace("<br>", "\n", $colis['adresse_liv']) ?></textarea>
-                            <div style="display: flex; align-content: center; justify-content: flex-end; margin-top: 1rem;">
-                                <button class="btn btn-primary modif-liv">
-                                    Modifier
-                                </button>
-                            </div>
-                        </div>
+    </div>
+    
+    <!-- Tracking section -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h5 class="card-title">Suivi du colis</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6>Etape 1 : Suivi achat</h6>
+                        <select id="statut" name="statut" class="form-select">
+                            <option value=""></option>
+                            <?php
+                            $req_boucle = $bdd->prepare("SELECT * FROM configurations_suivi_achat where type=3");
+                            $req_boucle->execute();
+                            while ($ligne_boucle = $req_boucle->fetch()) {
+                            ?>
+                                <option value="<?= $ligne_boucle['id'] ?>" <?php if ($colis['statut'] == $ligne_boucle['id']) { ?> selected <?php } ?>><?= $ligne_boucle['nom_suivi'] ?></option>
+                            <?php
+                            }
+                            $req_boucle->closeCursor();
+                            ?>
+                        </select>
                     </div>
-
                 </div>
-
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6>Etape 2 : Suivi expédition</h6>
+                        <select id="statut_expedition" name="statut_expedition" class="form-select">
+                            <option value=""></option>
+                            <?php
+                            $req_boucle = $bdd->prepare("SELECT * FROM configurations_suivi_expedition where type = 3");
+                            $req_boucle->execute();
+                            while ($ligne_boucle = $req_boucle->fetch()) {
+                            ?>
+                                <option value="<?= $ligne_boucle['id'] ?>" <?php if ($colis['statut_expedition'] == $ligne_boucle['id']) { ?> selected <?php } ?>><?= $ligne_boucle['nom_suivi'] ?></option>
+                            <?php
+                            }
+                            $req_boucle->closeCursor();
+                            ?>
+                        </select>
+                    </div>
+                </div>
             </div>
-
-            <br>
-
-        </div>
-        <div style="border-top: 1px solid #dddddd; padding: 2rem;">
-            <h4 style="color: #ff9900; font-weight: bold;">SUIVI DES ENCAISSEMENTS ET DES REMBOURSEMENTS</h4>
-
-            <div class="remboursement">
-
-                <div class="encaissement">
-                    <h5 style="font-weight: bold">Encaissement</h5>
-                    <div class="remboursement">
-
-                        <div>
-
-                            <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                                <label for="montant_a_payer" style="margin-right: 1rem; font-weight: normal;">Montant à payer</label>
-                                <input class="form-control" type="text" name="montant_a_payer" id="montant_a_payer" style="width: 10rem; margin-right: 1rem;" value=" <?= number_format($prix_total, 0, '.', ' ') ?> " disabled>
+            
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6>Messages prédéfinis</h6>
+                        <select id="message" name="message" class="form-select">
+                            <option value=""></option>
+                            <?php
+                            $req_boucle = $bdd->prepare("SELECT * FROM configurations_messages_predefini where type is null");
+                            $req_boucle->execute();
+                            while ($ligne_boucle = $req_boucle->fetch()) {
+                            ?>
+                                <option value="<?= $ligne_boucle['id'] ?>" <?php if ($colis['message'] == $ligne_boucle['id']) { ?> selected <?php } ?>><?= $ligne_boucle['message'] ?></option>
+                            <?php
+                            }
+                            $req_boucle->closeCursor();
+                            ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <h6>Commentaire livraison</h6>
+                        <textarea class="form-control" style="height: 120px" name="commentaire_livraison" id="commentaire_livraison"><?= $colis['commentaire_livraison']; ?></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Réduction</label>
+                        <input class="form-control" type="text" name="reduction" value="<?= $colis['prix_reduction'] ?>" id="reduction" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Code de réduction</label>
+                        <input class="form-control" type="text" value="<?= $colis['code_promo'] ?>" name="code_de_reduction" id="code_de_reduction" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Douane à la livraison</label>
+                        <div class="d-flex">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" id="oui" name="douane_a_la_livraison" value="oui" <?php echo $colis['douane_a_la_liv'] == 'oui' ? 'checked' : ''; ?> disabled>
+                                <label class="form-check-label" for="oui">Oui</label>
                             </div>
-
-                            <div style="display: flex; align-items: center; justify-content: flex-end;">
-                                <label for="montant_paye_client" style="margin-right: 1rem; font-weight: normal;">Montant payé par le client :</label>
-                                <input class="form-control" type="text" name="montant_paye_client" id="montant_paye_client"
-                                    value="<?= number_format($colis['montant_paye_client'] ? $colis['montant_paye_client'] : 0, 0, '.', ' ') ?>"
-                                    style="width: 10rem; margin-right: 1rem;" disabled>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="non" name="douane_a_la_livraison" value="non" <?php echo $colis['douane_a_la_liv'] != 'oui' ? 'checked' : ''; ?> disabled>
+                                <label class="form-check-label" for="non">Non</label>
                             </div>
-
-                        </div>
-
-                        <div style="margin-left: 10rem">
-
-
-                            <div style='display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;'>
-                                <label for="total_a_regulariser" style="margin-right: 1rem; font-weight: normal;">Total à régulariser</label>
-                                <input class="form-control" disabled type="text" name="total_a_regulariser"
-                                    value="<?= number_format(!empty($colis['prix_total_reel']) ? $colis['prix_total_reel'] - $colis['montant_paye_client'] : $colis['prix_total'] - $colis['montant_paye_client'], 0, '.', ' ') ?>"
-                                    id="total_a_regulariser" style="width: 10rem; margin-right: 1rem;">
-                            </div>
-
-
-                            <div style='display: flex; align-items: center; justify-content: flex-end;'>
-                                <label for="restant_payer" style="margin-right: 1rem; font-weight: normal;">Restant à payer</label>
-                                <input class="form-control" type="text" name="restant_payer" id="restant_payer"
-                                    value="<?= number_format($colis['restant_payer'], 0, '.', ' ') ?>"
-                                    style="width: 10rem; margin-right: 1rem;">
-                            </div>
-
                         </div>
                     </div>
-                    <div class="remboursement" style=" margin-top: 3rem;">
-                        <div>
-                            <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;'>
-                                <label for="montant_recu" style="font-weight: normal; margin-right: 1rem;">Montant reçu</label>
-                                <input class="form-control" type="text" name="montant_recu" id="montant_recu" style="width: 10rem; margin-right: 1rem;">
-                            </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Montant de la douane et transport</label>
+                        <input class="form-control" type="text" name="prix_expedition" id="prix_expedition" value="<?php echo $colis['douane_a_la_liv'] == 'oui' ? $colis['dette_montant'] : $colis['prix_expedition']; ?>" disabled>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Montant à payer</label>
+                        <input class="form-control" type="text" name="montant_a_payer" id="montant_a_payer" value="<?= number_format($prix_total, 0, '.', ' ') ?>" disabled>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-2">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de Kg</label>
+                        <input class="form-control" type="text" value="<?= $colis['poids'] ?>" name="poids" id="poids" disabled>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Prix du Kg</label>
+                        <input class="form-control" type="text" value="<?= round($prix_kilo_colis / 0.00152449) ?>" name="prix_du_kg" id="prix_du_kg" disabled>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Douane et transport réel</label>
+                        <input class="form-control" type="text" name="douane_et_transport_reel" value="" id="douane_et_transport_reel" disabled>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Ecart</label>
+                        <input class="form-control" type="text" name="ecart" id="ecart" value="" disabled>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Lot d'expédition</label>
+                        <input class="form-control" type="text" value="<?= $colis['lot_expedition'] ?>" name="lot_expedition" id="lot_expedition">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Date d'envoi</label>
+                        <?php
+                        if ($colis['date_envoi'] != null) {
+                            $date_envoi = date('Y-m-d', $colis['date_envoi']);
+                        }
+                        ?>
+                        <input class="form-control" type="date" value="<?= $date_envoi ?>" name="date_envoi" id="date_envoi">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delivery and Payment section -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h5 class="card-title">Mode de livraison et paiement</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <h6>Mode de livraison</h6>
+                        <?php
+                        $sql_select = $bdd->prepare('SELECT * from configurations_livraisons_gabon WHERE id=?');
+                        $sql_select->execute(array(intval($colis['id_livraison'])));
+                        $livraison = $sql_select->fetch();
+                        $sql_select->closeCursor();
 
-                            <div style="display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;">
-                                <label for="moyen_d_encaissement" style="font-weight: normal; margin-right: 1rem;">Moyen d'encaissement : </label>
-                                <select name="moyen_d_encaissement" id="moyen_d_encaissement" style="width: 10rem; margin-right: 1rem;" class="form-control">
+                        $sql_all = $bdd->prepare("SELECT * FROM `configurations_livraisons_gabon` WHERE `activer` = ?");
+                        $sql_all->execute(array('oui'));
+
+                        while ($row = $sql_all->fetch()) {
+                            $checked = ($row['id'] == $livraison['id']) ? 'checked' : '';
+                        ?>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="livraison_<?= $row['id'] ?>" name="mode_de_livraison" value="<?= $row['nom_livraison'] ?>" <?= $checked ?> disabled>
+                                <label class="form-check-label" for="livraison_<?= $row['id'] ?>"><?= $row['nom_livraison'] ?></label>
+                            </div>
+                        <?php
+                        }
+                        $sql_all->closeCursor();
+                        ?>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <h6>Mode de paiement</h6>
+                        <?php
+                        $sql_select = $bdd->prepare('SELECT * from configurations_modes_paiement WHERE id=?');
+                        $sql_select->execute(array(intval($colis['id_paiement'])));
+                        $paiement = $sql_select->fetch();
+                        $sql_select->closeCursor();
+
+                        $sql_all = $bdd->prepare("SELECT * FROM `configurations_modes_paiement` WHERE `statut_mode` = ?");
+                        $sql_all->execute(array('oui'));
+
+                        while ($row = $sql_all->fetch()) {
+                            $checked = ($row['id'] == $paiement['id']) ? 'checked' : '';
+                        ?>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="paiement_<?= $row['id'] ?>" name="mode_de_paiement" value="<?= $row['nom_mode'] ?>" <?= $checked ?> disabled>
+                                <label class="form-check-label" for="paiement_<?= $row['id'] ?>"><?= $row['nom_mode'] ?></label>
+                            </div>
+                        <?php
+                        }
+                        $sql_all->closeCursor();
+                        ?>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <h6>En plusieurs fois</h6>
+                        <?php
+                        $sql_select = $bdd->prepare('SELECT * from configurations_modes_paiement_plusieurs_fois WHERE id=?');
+                        $sql_select->execute(array(
+                            intval($colis['id_paiement_pf'])
+                        ));
+                        $paiement = $sql_select->fetch();
+                        $sql_select->closeCursor();
+
+                        $sql_all = $bdd->prepare("SELECT * FROM `configurations_modes_paiement_plusieurs_fois`");
+                        $sql_all->execute();
+
+                        while ($row = $sql_all->fetch()) {
+                            $checked = ($row['id'] == $paiement['id']) ? 'checked' : '';
+                        ?>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" id="plusieurs_fois_<?= $row['id'] ?>" name="plusieurs_fois" value="<?= $row['nom'] ?>" <?= $checked ?> disabled>
+                                <label class="form-check-label" for="plusieurs_fois_<?= $row['id'] ?>"><?= $row['nom'] ?></label>
+                            </div>
+                        <?php
+                        }
+                        $sql_all->closeCursor();
+                        ?>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-3">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title">Adresse de facturation</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="text-fac" class="border p-3 mb-3" style="min-height: 120px">
+                                <?= nl2br($colis['adresse_fac']) ?>
+                            </div>
+                            <textarea style="display: none;" class="form-control mb-3" name="" id="adresse_fac"><?= str_replace("<br>", "\n", $colis['adresse_fac']) ?></textarea>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-primary modif-fac">Modifier</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title">Adresse de livraison</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="text-liv" class="border p-3 mb-3" style="min-height: 120px">
+                                <?= nl2br($colis['adresse_liv']) ?>
+                            </div>
+                            <textarea style="display: none;" class="form-control mb-3" name="" id="adresse_liv"><?= str_replace("<br>", "\n", $colis['adresse_liv']) ?></textarea>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-primary modif-liv">Modifier</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payments and Refunds section -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h5 class="card-title">Suivi des encaissements et des remboursements</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="card-title">Encaissement</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Montant à payer</label>
+                                    <input class="form-control" type="text" name="montant_a_payer" id="montant_a_payer" value="<?= number_format($prix_total, 0, '.', ' ') ?>" disabled>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Montant payé par le client</label>
+                                    <input class="form-control" type="text" name="montant_paye_client" id="montant_paye_client" value="<?= number_format($colis['montant_paye_client'] ? $colis['montant_paye_client'] : 0, 0, '.', ' ') ?>" disabled>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Total à régulariser</label>
+                                    <input class="form-control" disabled type="text" name="total_a_regulariser" value="<?= number_format(!empty($colis['prix_total_reel']) ? $colis['prix_total_reel'] - $colis['montant_paye_client'] : $colis['prix_total'] - $colis['montant_paye_client'], 0, '.', ' ') ?>" id="total_a_regulariser">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Restant à payer</label>
+                                    <input class="form-control" type="text" name="restant_payer" id="restant_payer" value="<?= number_format($colis['restant_payer'], 0, '.', ' ') ?>">
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Montant reçu</label>
+                                    <input class="form-control" type="text" name="montant_recu" id="montant_recu">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Date de réception</label>
+                                    <input class="form-control" type="date" name="date_de_reception" id="date_de_reception">
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label">Moyen d'encaissement</label>
+                                    <select name="moyen_d_encaissement" id="moyen_d_encaissement" class="form-select">
+                                        <option value=""></option>
+                                        <option value="Espèces">Espèces</option>
+                                        <option value="Chèque">Chèque</option>
+                                        <option value="Airtel money">Airtel money</option>
+                                        <option value="Flooz">Flooz</option>
+                                        <option value="MobiCash">MobiCash</option>
+                                        <option value="PayPal">PayPal</option>
+                                        <option value="CB">CB</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Type d'encaissement</label>
+                                    <select name="type_d_encaissement" id="type_d_encaissement" class="form-select">
+                                        <option value=""></option>
+                                        <option value="Comptant">Comptant</option>
+                                        <option value="60 %">60 %</option>
+                                        <option value="2 fois">2 fois</option>
+                                        <option value="3 fois">3 fois</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Statut de paiement</label>
+                                    <select name="statut_paiement" id="statut_paiement" class="form-select">
+                                        <option value=""></option>
+                                        <option value="Paiement en attente" <?= $colis['statut_paiement'] == "Paiement en attente" ? 'selected' : '' ?>>Paiement en attente</option>
+                                        <option value="colis totalement payée" <?= $colis['statut_paiement'] == "Colis totalement payée" ? 'selected' : '' ?>>Colis totalement payée</option>
+                                        <option value="colis partiellement payée" <?= $colis['statut_paiement'] == "Colis partiellement payée" ? 'selected' : '' ?>>Colis partiellement payée</option>
+                                        <option value="Défaut de paiement" <?= $colis['statut_paiement'] == "Défaut de paiement" ? 'selected' : '' ?>>Défaut de paiement</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">A échéance du</label>
+                                    <input class="form-control" type="date" name="echeance_du" id="echeance_du">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Motif</label>
+                                    <input class="form-control" type="text" name="motif_encaissement" id="motif_encaissement" value="<?= $colis['motif_encaissement'] ?>">
+                                </div>
+                            </div>
+                            
+                            <?php if (!empty($colis['id_paiement_pf'])) { ?>
+                                <h6 class="mt-4">Echéancier</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">1er <?= $colis['dette_montant_pf'] ?></label>
+                                        <select id='dette_payee_pf' name='dette_payee_pf' class='form-select'>
+                                            <option value='Payé' <?php if ($colis['dette_payee_pf'] == 'Payé') { echo 'selected'; } ?>>Payé</option>
+                                            <option value='Non payé' <?php if ($colis['dette_payee_pf'] == 'Non payé') { echo 'selected'; } ?>>Non payé</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">2e <?= $colis['dette_montant_pf2'] ?></label>
+                                        <select id='dette_payee_pf2' name='dette_payee_pf2' class='form-select'>
+                                            <option value='Payé' <?php if ($colis['dette_payee_pf2'] == 'Payé') { echo 'selected'; } ?>>Payé</option>
+                                            <option value='Non payé' <?php if ($colis['dette_payee_pf2'] == 'Non payé') { echo 'selected'; } ?>>Non payé</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <?php if (!empty($colis['dette_montant_pf3'])) { ?>
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label">3e <?= $colis['dette_montant_pf3'] ?></label>
+                                            <select id='dette_payee_pf3' name='dette_payee_pf3' class='form-select'>
+                                                <option value='Payé' <?php if ($colis['dette_payee_pf3'] == 'Payé') { echo 'selected'; } ?>>Payé</option>
+                                                <option value='Non payé' <?php if ($colis['dette_payee_pf3'] == 'Non payé') { echo 'selected'; } ?>>Non payé</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            <?php } ?>
+                            
+                            <h6 class="mt-4">Transactions</h6>
+                            <div class="ps-3" style="max-height: 20vh; overflow-y: auto;">
+                                <?php
+                                $req_boucle = $bdd->prepare("SELECT * FROM membres_transactions_colis WHERE id_colis=? AND type=? ORDER BY id DESC");
+                                $req_boucle->execute(array($_POST['idaction'], "Paiement"));
+                                while ($ligne_boucle = $req_boucle->fetch()) {
+                                ?>
+                                    <p>- Paiement <?= $ligne_boucle['moyen'] ?> <?= $ligne_boucle['mode_encaissement'] ?> de <?= $ligne_boucle['montant'] ?> f cfa réalisé le <?= $ligne_boucle['date'] ?>
+                                        <?php if (!empty($ligne_boucle['motif'])) { ?>
+                                            : <?= $ligne_boucle['motif'] ?>
+                                        <?php } ?>
+                                        <?= $ligne_boucle['echeance_du'] ? ", <span class='text-danger fw-bold'> prochaine échéance le " . $ligne_boucle['echeance_du'] . "</span>" : '' ?>
+                                    </p>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="card-title">Remboursement</h6>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($alert == "oui") { ?>
+                                <div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Attention! des articles ont été annulés, veuillez procéder au remboursement si besoin</div>
+                            <?php } ?>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Montant à rembourser</label>
+                                <input class="form-control" type="text" name="montant_rembourser" id="montant_rembourser" value="<?= number_format($colis['montant_rembourser'], 0, '.', ' ') ?>">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Restant à rembourser</label>
+                                <input class="form-control" type="text" name="restant_rembourser" id="restant_rembourser" value="<?= number_format($colis['restant_rembourser'], 0, '.', ' ') ?>">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Total remboursé</label>
+                                <input class="form-control" type="text" name="total_rembourse" id="total_rembourse" value="<?= number_format($colis['total_rembourse'], 0, '.', ' ') ?>" disabled>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Montant remboursé</label>
+                                <input class="form-control" type="text" name="regulariser" id="regulariser" value="<?= number_format($colis['regulariser'], 0, '.', ' ') ?>">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Date de remboursement</label>
+                                <input class="form-control" type="date" name="date_rem" id="date_rem">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Moyen de remboursement</label>
+                                <select name="moyen_de_remboursement" id="moyen_de_remboursement" class="form-select">
                                     <option value=""></option>
                                     <option value="Espèces">Espèces</option>
                                     <option value="Chèque">Chèque</option>
@@ -1380,224 +1496,48 @@ if (
                                     <option value="CB">CB</option>
                                 </select>
                             </div>
-
-                            <div style="display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;">
-                                <label for="type_d_encaissement" style="font-weight: normal; margin-right: 1rem;">Type d'encaissement : </label>
-                                <select name="type_d_encaissement" id="type_d_encaissement" style="width: 10rem; margin-right: 1rem;" class="form-control">
-                                    <option value=""></option>
-                                    <option value="Comptant">Comptant</option>
-                                    <option value="60 %">60 %</option>
-
-                                    <option value="2 fois">2 fois</option>
-                                    <option value="3 fois">3 fois</option>
-                                </select>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Motif</label>
+                                <input class="form-control" type="text" name="motif_remboursement" id="motif_remboursement" value="<?= $colis['motif_remboursement'] ?>">
                             </div>
-                        </div>
-                        <div style="margin-left: 5rem">
-                            <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;'>
-                                <label for="date_de_reception" style="font-weight: normal; margin-right: 1rem;">Date de réception</label>
-                                <input class="form-control" type="date" name="date_de_reception" id="date_de_reception" style="width: 14rem; margin-right: 1rem;">
-                            </div>
-
-                            <div style="display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;">
-                                <label for="statut_paiement" style="font-weight: normal; margin-right: 1rem;">Statut de paiement : </label>
-
-                                <select name="statut_paiement" id="statut_paiement" style="width: 14rem; margin-right: 1rem;" class="form-control">
-                                    <option value=""></option>
-                                    <option value="Paiement en attente" <?= $colis['statut_paiement'] == "Paiement en attente" ? 'selected' : '' ?>>Paiement en attente</option>
-                                    <option value="colis totalement payée" <?= $colis['statut_paiement'] == "Colis totalement payée" ? 'selected' : '' ?>>Colis totalement payée</option>
-                                    <option value="colis partiellement payée" <?= $colis['statut_paiement'] == "Colis partiellement payée" ? 'selected' : '' ?>>Colis partiellement payée</option>
-                                    <option value="Défaut de paiement" <?= $colis['statut_paiement'] == "Défaut de paiement" ? 'selected' : '' ?>>Défaut de paiement</option>
-                                </select>
-                            </div>
-
-                            <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;'>
-                                <label for="echeance_du" style="font-weight: normal; margin-right: 1rem;">A échéance du : </label>
-                                <input class="form-control" type="date" name="echeance_du" id="echeance_du" style="width: 14rem; margin-right: 1rem;">
-                            </div>
-                        </div>
-
-                        <div style="margin-left: 5rem">
-                            <?php if (!empty($colis['id_paiement_pf'])) {
-                            ?>
-                                <h5 style="font-weight: bold">Echéancier</h5>
-                                <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;'>
-                                    <label for="echeancier1" style="font-weight: normal; margin-right: 1rem;">1er <?= $colis['dette_montant_pf'] ?> </label>
-                                    <select id='dette_payee_pf' name='dette_payee_pf' class='form-control' style='width:50%'>
-                                        <option value='Payé' <?php if ($colis['dette_payee_pf'] == 'Payé') {
-                                                                    echo 'selected';
-                                                                } ?>>Payé</option>
-                                        <option value='Non payé' <?php if ($colis['dette_payee_pf'] == 'Non payé') {
-                                                                        echo 'selected';
-                                                                    } ?>>Non payé</option>
-                                    </select>
-                                    <!--input class="form-control" type="text" name="echeancier1" id="echeancier1" style="width: 10rem; margin-right: 1rem;" disabled-->
-                                </div>
-                                <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;'>
-                                    <label for="echeancier2" style="font-weight: normal; margin-right: 1rem;">2e <?= $colis['dette_montant_pf2'] ?> </label>
-                                    <select id='dette_payee_pf2' name='dette_payee_pf2' class='form-control' style='width:50%'>
-                                        <option value='Payé' <?php if ($colis['dette_payee_pf2'] == 'Payé') {
-                                                                    echo 'selected';
-                                                                } ?>>Payé</option>
-                                        <option value='Non payé' <?php if ($colis['dette_payee_pf2'] == 'Non payé') {
-                                                                        echo 'selected';
-                                                                    } ?>>Non payé</option>
-                                    </select>
-                                    <!--input class="form-control" type="text" name="echeancier2" id="echeancier2" style="width: 10rem; margin-right: 1rem;" disabled-->
-                                </div>
-                                <?php if (!empty($colis['dette_montant_pf3'])) { ?>
-                                    <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 1rem;'>
-                                        <label for="echeancier3" style="font-weight: normal; margin-right: 1rem;">3e <?= $colis['dette_montant_pf3'] ?> </label>
-                                        <select id='dette_payee_pf3' name='dette_payee_pf3' class='form-control' style='width:50%'>
-                                            <option value='Payé' <?php if ($colis['dette_payee_pf3'] == 'Payé') {
-                                                                        echo 'selected';
-                                                                    } ?>>Payé</option>
-                                            <option value='Non payé' <?php if ($colis['dette_payee_pf3'] == 'Non payé') {
-                                                                            echo 'selected';
-                                                                        } ?>>Non payé</option>
-                                        </select>
-                                        <!--input class="form-control" type="text" name="echeancier3" id="echeancier3" style="width: 10rem; margin-right: 1rem;" disabled-->
-                                    </div>
-                            <?php
-                                }
-                            } ?>
-
-                        </div>
-                    </div>
-                    <div style='display: flex; align-items: center; margin-top: 5rem;'>
-                        <label for="motif_encaissement" style="font-weight: normal; margin-right: 1rem;">Motif : </label>
-                        <input class="form-control" type="text" name="motif_encaissement" id="motif_encaissement" value="<?= $colis['motif_encaissement'] ?>" style="width: 20rem; margin-right: 1rem;">
-                    </div>
-
-                    <div style="margin-top: 3rem">
-                        <p style="font-weight: bold">Transactions</p>
-                        <?php
-                        ///////////////////////////////SELECT BOUCLE
-
-                        $req_boucle = $bdd->prepare("SELECT * FROM membres_transactions_colis WHERE id_colis=? AND type=? ORDER BY id DESC");
-                        $req_boucle->execute(array($_POST['idaction'], "Paiement"));
-                        while ($ligne_boucle = $req_boucle->fetch()) {
-                        ?>
-                            <p>- Paiement <?= $ligne_boucle['moyen'] ?> <?= $ligne_boucle['mode_encaissement'] ?> de <?= $ligne_boucle['montant'] ?> f cfa réalisé le <?= $ligne_boucle['date'] ?>
-                                <?php if (!empty($ligne_boucle['motif'])) { ?>
-                                    : <?= $ligne_boucle['motif'] ?>
+                            
+                            <h6 class="mt-4">Transactions</h6>
+                            <div class="ps-3" style="max-height: 20vh; overflow-y: auto;">
+                                <?php
+                                $req_boucle = $bdd->prepare("SELECT * FROM membres_transactions_colis WHERE id_colis=? AND type=? ORDER BY id DESC");
+                                $req_boucle->execute(array($_POST['idaction'], "Remboursement"));
+                                while ($ligne_boucle = $req_boucle->fetch()) {
+                                ?>
+                                    <p>- Remboursement <?= $ligne_boucle['moyen'] ?> de <?= $ligne_boucle['montant'] ?> f cfa réalisé le <?= $ligne_boucle['date'] ?>
+                                        <?php if (!empty($colis['motif_remboursement'])) { ?>
+                                            : <?= $colis['motif_remboursement'] ?>
+                                        <?php } ?>
+                                    </p>
                                 <?php } ?>
-                                <?= $ligne_boucle['echeance_du'] ? ", <label style='color: red;'><b> prochaine échéance le " . $ligne_boucle['echeance_du'] . "</b></label>" : '' ?>
-                            </p>
-                        <?php } ?>
-                    </div>
-                    <div style="display:flex;margin-top:1rem">
-                        <div>
-                            <!--button id="paiement_save" class="btn btn-success" style="width: 100px; text-align:center">Enregistrer</button-->
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div style="border-left: 1px solid #dfdfdf; padding-left: 2rem; padding-right: 1rem; display: flex; flex-direction: column; align-items: center;">
-
-                    <h5 style="font-weight: bold">Remboursement</h5>
-                    <?php if ($alert == "oui") { ?>
-                        <div class="alert alert-danger"><i class="uk-icon-warning"></i> Attention! des articles ont été annulés, veuillez procéder au remboursement si besoin</div>
-                    <?php } ?>
-                    <div>
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                            <label for="montant_rembourser" style="margin-right: 1rem; font-weight: normal;">Montant à rembourser</label>
-                            <input class="form-control" type="text" name="montant_rembourser" id="montant_rembourser"
-                                value="<?= number_format($colis['montant_rembourser'], 0, '.', ' ') ?>"
-                                style="width: 14rem; margin-right: 1rem;">
-                        </div>
-
-
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                            <label for="restant_rembourser" style="margin-right: 1rem; font-weight: normal;">Restant à rembourser</label>
-                            <input class="form-control" type="text" name="restant_rembourser" id="restant_rembourser"
-                                value="<?= number_format($colis['restant_rembourser'], 0, '.', ' ') ?>"
-                                style="width: 14rem; margin-right: 1rem;">
-                        </div>
-
-
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                            <label for="total_rembourse" style="margin-right: 1rem; font-weight: normal;">Total remboursé</label>
-                            <input class="form-control" type="text" name="total_rembourse" id="total_rembourse"
-                                value="<?= number_format($colis['total_rembourse'], 0, '.', ' ') ?>"
-                                style="width: 14rem; margin-right: 1rem;" disabled>
-                        </div>
-
-                    </div>
-
-                    <div style="margin-top: 3rem">
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                            <label for="regulariser" style="margin-right: 1rem; font-weight: normal;">Montant remboursé</label>
-                            <input class="form-control" type="text" name="regulariser" id="regulariser"
-                                value="<?= number_format($colis['regulariser'], 0, '.', ' ') ?>"
-                                style="width: 14rem; margin-right: 1rem;">
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                            <label for="date_rem" style="margin-right: 1rem; font-weight: normal;">Date de remboursement</label>
-                            <input class="form-control" type="date" name="date_rem" id="date_rem" style="width: 14rem; margin-right: 1rem;">
-                        </div>
-                        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem;">
-                            <label for="moyen_de_remboursement" style="font-weight: normal; margin-right: 1rem;">Moyen de remboursement </label>
-                            <select name="moyen_de_remboursement" id="moyen_de_remboursement" style="width: 14rem; margin-right: 1rem;" class="form-control">
-                                <option value=""></option>
-                                <option value="Espèces">Espèces</option>
-                                <option value="Chèque">Chèque</option>
-                                <option value="Airtel money">Airtel money</option>
-                                <option value="Flooz">Flooz</option>
-                                <option value="MobiCash">MobiCash</option>
-                                <option value="PayPal">PayPal</option>
-                                <option value="CB">CB</option>
-                            </select>
-                        </div>
-                        <div style='display: flex; align-items: center; justify-content: flex-end; margin-top: 5rem;'>
-                            <label for="motif_remboursement" style="font-weight: normal; margin-right: 1rem;">Motif : </label>
-                            <input class="form-control" type="text" name="motif_remboursement" id="motif_remboursement" value="<?= $colis['motif_remboursement'] ?>" style="width: 20rem; margin-right: 1rem;">
-                        </div>
-
-                    </div>
-
-
-                    <div style="margin-top: 3rem">
-                        <p style="font-weight: bold">Transactions</p>
-                        <?php
-                        ///////////////////////////////SELECT BOUCLE
-
-                        $req_boucle = $bdd->prepare("SELECT * FROM membres_transactions_colis WHERE id_colis=? AND type=? ORDER BY id DESC");
-                        $req_boucle->execute(array($_POST['idaction'], "Remboursement"));
-                        while ($ligne_boucle = $req_boucle->fetch()) {
-                        ?>
-                            <p>- Remboursement <?= $ligne_boucle['moyen'] ?> de <?= $ligne_boucle['montant'] ?> f cfa réalisé le <?= $ligne_boucle['date'] ?>
-                                <?php if (!empty($colis['motif_remboursement'])) { ?>
-                                    : <?= $colis['motif_remboursement'] ?>
-                                <?php } ?>
-                            </p>
-                        <?php } ?>
-                    </div>
-                    <div style="display:flex;margin-top:1rem">
-                        <div>
-
-        </div>
-
-        <div style="border-top: 1px solid #dddddd; padding: 2rem;">
-            <h4 style="color: #ff9900; font-weight: bold;">NOTES</h4>
-            <div style="display: flex; flex-direction: column">
-                <label for="notes">Notes</label>
-                <textarea id="notes" name="notes"><?= $colis['notes'] ?></textarea>
-            </div>
-
-        </div>
-
-        <div class="button-modifier" style="display:flex;margin-top:1rem">
-            <div>
-                <button id="update" class="btn btn-success update" style="width: 100px; text-align:center">Modifier</button>
             </div>
         </div>
-
-
-
-
     </div>
-
+    
+    <!-- Notes section -->
+    <div class="card mb-5">
+        <div class="card-header">
+            <h5 class="card-title">Notes</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <textarea id="notes" name="notes" class="form-control" rows="4"><?= $colis['notes'] ?></textarea>
+            </div>
+            
+            <div class="mt-5">
+                <button class="btn btn-primary update">Modifier</button>
+            </div>
+        </div>
+    </div>
 <?php } else {
     header('location: /index.html');
 }
