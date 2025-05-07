@@ -28,7 +28,7 @@ $lasturl = $_SERVER['HTTP_REFERER'];
   \*****************************************************/
 
 $id = $_POST['id'];
-$annuler_commande = $_POST['annuler_commande'];
+$statut = $_POST['statut'];
 $statut_2 = $_POST['statut_2'];
 $message = $_POST['message'];
 $poids = $_POST['poids'];
@@ -39,6 +39,7 @@ $montant_rembourser = $_POST['montant_rembourser'];
 $montant_recu = $_POST['montant_recu'];
 $montant_paye_client = $_POST['montant_paye_client'];
 $statut_paiement = $_POST['statut_paiement'];
+//$douane_et_transport_reel = $_POST['douane_et_transport_reel'];
 $statut_expedition = $_POST['statut_expedition'];
 $dette_payee_pf = $_POST['dette_payee_pf'];
 $dette_payee_pf2 = $_POST['dette_payee_pf2'];
@@ -53,16 +54,24 @@ $commentaire_livraison = $_POST['commentaire_livraison'];
 $echeance_du = $_POST['echeance_du'];
 $adresse_liv = $_POST['adresse_liv'];
 $adresse_fac = $_POST['adresse_fac'];
+$annuler_commande = $_POST['annuler_commande'];
 $lot_expedition = $_POST['lot_expedition'];
 $douane_a_la_liv = $_POST['douane_a_la_livraison'];
+if (isset($_POST['date_envoi'])) {
+    $date_envoi = strtotime($_POST['date_envoi']);
+} else {
+    $date_envoi = null;
+}
 $motif_encaissement = $_POST['motif_encaissement'];
 $motif_remboursement = $_POST['motif_remboursement'];
-$mode_encaissement = $_POST['mode_encaissement'];
 $now = time();
+$mode_encaissement = $_POST['mode_encaissement'];
+
 
 if (isset($user)) {
-    if (isset($id)) {
-        // Update the main order record
+    if(isset($id)){
+
+
         $sql_update = $bdd->prepare("UPDATE membres_commandes SET
         statut_2=?,
         message=?,
@@ -73,66 +82,69 @@ if (isset($user)) {
         poids=?,
         notes=?,
         restant_payer=?,
-        restant_rembourser=?,
+        restant_rembourser = ?,
         montant_rembourser=?,
         statut_paiement=?,
-        adresse_liv=?,
-        adresse_fac=?,
+        adresse_liv = ?,
+        adresse_fac = ?,
         commentaire_livraison=?,
         lot_expedition=?,
         date_envoi=?,
         douane_a_la_liv=?
         WHERE id=?");
 
-        $date_envoi = !empty($_POST['date_envoi']) ? strtotime($_POST['date_envoi']) : null;
-
-        $sql_update->execute(array(
-            $statut_2,
-            $message,
-            $statut_expedition,
-            $dette_payee_pf,
-            $dette_payee_pf2,
-            $dette_payee_pf3,
-            $poids,
-            $notes,
-            $restant_payer,
-            $restant_rembourser,
-            $montant_rembourser,
-            $statut_paiement,
-            $adresse_liv,
-            $adresse_fac,
-            $commentaire_livraison,
-            $lot_expedition,
-            $date_envoi,
-            $douane_a_la_liv,
-            intval($id)
-        ));
+        $sql_update->execute(
+            array(
+                $statut_2,
+                $message,
+                $statut_expedition,
+                $dette_payee_pf,
+                $dette_payee_pf2,
+                $dette_payee_pf3,
+                $poids,
+                $notes,
+                $restant_payer,
+                $restant_rembourser,
+                $montant_rembourser,
+                $statut_paiement,
+                $adresse_liv,
+                $adresse_fac,
+                $commentaire_livraison,
+                $lot_expedition,
+                $date_envoi,
+                $douane_a_la_liv,
+                intval($id)
+            )
+        );
         $sql_update->closeCursor();
 
-        // Handle status change to "completed" (10)
-        if ($statut_2 == "10") {
-            // Update invoice status if it exists
+        if($statut_2 == "10"){
+            //Facture
             $sql_update = $bdd->prepare("UPDATE membres_prestataire_facture SET statut = ? WHERE id_commande = ?");
             $sql_update->execute(array("Activée", intval($id)));
             $sql_update->closeCursor();
         }
 
-        // Handle order cancellation
-        if (!empty($annuler_commande) && $annuler_commande == "oui") {
+        if(!empty($annuler_commande) && $annuler_commande == "oui"){
             $sql_update = $bdd->prepare("UPDATE membres_commandes SET
-            statut_2=?,
-            prix_total=?
-            WHERE id=?");
+        statut_2=?,
+        /* sous_total = ?, */
+        prix_total = ?
+      /*   prix_expedition = ? */
+        WHERE id=?");
 
-            $sql_update->execute(array(
-                "3", // Cancelled status
-                0,   // Zero out the total
+        $sql_update->execute(
+            array(
+                "3",
+                /* 0, */
+                0,
+                /* 0, */
                 intval($id)
-            ));
-            $sql_update->closeCursor();
+            )
+        );
+        $sql_update->closeCursor();
         }
 
-        // Create history record
         $sql_update = $bdd->prepare("INSERT INTO admin_commandes_historique
         (
             id_commande, 
@@ -141,105 +153,114 @@ if (isset($user)) {
             date
         )
         VALUES (?,?,?,?)");
-        $sql_update->execute(array(
+    $sql_update->execute(
+        array(
             $id,
             $id_oo,
-            $user,
+            $user, 
             $now
-        ));
-        $sql_update->closeCursor();
+        )
+    );
+    $sql_update->closeCursor();
 
-        // Handle payment received
-        if (!empty($montant_recu)) {
-            $montant_paye_client = floatval($montant_paye_client) + floatval($montant_recu);
+    if(!empty($montant_recu)){
 
-            // Update total paid amount
-            $sql_update = $bdd->prepare("UPDATE membres_commandes SET
-            montant_paye_client=?
-            WHERE id=?");
+        $montant_paye_client = $montant_paye_client + $montant_recu ;
 
-            $sql_update->execute(array(
+        $sql_update = $bdd->prepare("UPDATE membres_commandes SET
+        montant_paye_client=?
+        WHERE id=?");
+
+        $sql_update->execute(
+            array(
                 $montant_paye_client,
                 intval($id)
-            ));
-            $sql_update->closeCursor();
-
-            // Insert transaction record for payment
-            $sql_update = $bdd->prepare("INSERT INTO membres_transactions_commande
-            ( 
-                id_membre,
-                id_commande,
-                date,
-                type,
-                moyen,
-                montant,
-                echeance_du,
-                motif,
-                mode_encaissement
             )
-            VALUES (?,?,?,?,?,?,?,?,?)");
-            $sql_update->execute(array(
-                $id_oo,
-                $id,
-                $date_de_reception,
-                "Paiement",
-                $moyen_d_encaissement,
-                $montant_recu,
-                $echeance_du,
-                $motif_encaissement,
-                $mode_encaissement
-            ));
-            $sql_update->closeCursor();
-        }
+        );
+        $sql_update->closeCursor();
 
-        // Handle regularization/adjustment
-        if (!empty($regulariser)) {
-            $total_rembourse = floatval($total_rembourse) + floatval($regulariser);
-
-            // Update total refunded amount
-            $sql_update = $bdd->prepare("UPDATE membres_commandes SET
-            total_rembourse=?
-            WHERE id=?");
-
-            $sql_update->execute(array(
-                $total_rembourse,
-                intval($id)
-            ));
-            $sql_update->closeCursor();
-
-            // Insert transaction record for refund
-            $sql_update = $bdd->prepare("INSERT INTO membres_transactions_commande
-            ( 
-                id_membre,
-                id_commande,
-                date,
-                type,
-                moyen,
-                montant,
-                motif
-            )
-            VALUES (?,?,?,?,?,?,?)");
-            $sql_update->execute(array(
-                $id_oo,
-                $id,
-                $date_rem,
-                "Remboursement",
-                $moyen_de_remboursement,
-                $regulariser,
-                $motif_remboursement
-            ));
-            $sql_update->closeCursor();
-        }
-
-        $result = array("Texte_rapport" => "Commande modifiée !", "retour_validation" => "ok", "retour_lien" => "");
-    } else {
-        $result = array("Texte_rapport" => "Erreur: ID de commande non défini", "retour_validation" => "non", "retour_lien" => "");
+        $sql_update = $bdd->prepare("INSERT INTO membres_transactions_commande
+        ( 
+            id_membre,
+            id_commande,
+            date,
+            type,
+            moyen,
+            montant,
+            echeance_du,
+            motif,
+            mode_encaissement
+        )
+        VALUES (?,?,?,?,?,?,?,?,?)");
+    $sql_update->execute(
+        array(
+            $id_oo,
+            $id,
+            $date_de_reception,
+            "Paiement",
+            $moyen_d_encaissement,
+            $montant_recu,
+            $echeance_du,
+            $motif_encaissement,
+            $mode_encaissement
+        )
+    );
+    $sql_update->closeCursor();
     }
 
-    echo json_encode($result);
+    if(!empty($regulariser)){
+
+        $total_rembourse = floatval($total_rembourse) + floatval($regulariser);
+
+        $sql_update = $bdd->prepare("UPDATE membres_commandes SET
+        total_rembourse=?
+        WHERE id=?");
+
+        $sql_update->execute(
+            array(
+                $total_rembourse,
+                intval($id)
+            )
+        );
+        $sql_update->closeCursor();
+
+        $sql_update = $bdd->prepare("INSERT INTO membres_transactions_commande
+        ( 
+            id_membre,
+            id_commande,
+            date,
+            type,
+            moyen,
+            montant,
+            motif
+        )
+        VALUES (?,?,?,?,?,?,?)");
+    $sql_update->execute(
+        array(
+            $id_oo,
+            $id,
+            $date_rem,
+            "Remboursement",
+            $moyen_de_remboursement,
+            $regulariser,
+            $motif_remboursement
+        )
+    );
+    $sql_update->closeCursor();
+    }
+
+        $result = array("Texte_rapport" => "Modifié!", "retour_validation" => "ok", "retour_lien" => "");
+    }else{
+        $result = array("Texte_rapport" => "Erreur", "retour_validation" => "non", "retour_lien" => "");
+    }
+    
+    $result = json_encode($result);
+    echo $result;
 } else {
     header('location: /index.html');
 }
+
+
 
 ob_end_flush();
 ?>

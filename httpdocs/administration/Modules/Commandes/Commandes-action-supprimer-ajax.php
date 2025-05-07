@@ -6,7 +6,7 @@ require_once('../../../Configurations.php');
 require_once('../../../Configurations_modules.php');
 
 ////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction = "../../../";
+$dir_fonction = "../../";
 require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
 
 $lasturl = $_SERVER['HTTP_REFERER'];
@@ -27,108 +27,44 @@ $lasturl = $_SERVER['HTTP_REFERER'];
  * Copyright ... Tous droits réservés auteur (Fabien B)*
   \*****************************************************/
 
-// Check if user is logged in
+$id = $_POST['id'];
+
 if (isset($user)) {
-    // Get order ID from POST data
-    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    if(isset($id)){
+        $sql_select = $bdd->prepare("SELECT * FROM membres_commandes WHERE id=?");
 
-    if ($id > 0) {
-        try {
-            // Begin transaction for data integrity
-            $bdd->beginTransaction();
-
-            // First check if the order exists
-            $check_sql = $bdd->prepare("SELECT id FROM membres_commandes WHERE id = ?");
-            $check_sql->execute(array($id));
-
-            if ($check_sql->rowCount() > 0) {
-                // Check if order has colis records before deletion
-                $check_colis = $bdd->prepare("SELECT id FROM membres_colis WHERE panier_id = ?");
-                $check_colis->execute(array($id));
-                
-                if ($check_colis->rowCount() > 0) {
-                    // There are linked colis records - handle accordingly
-                    // Either prevent deletion or handle the relationship
-                    $bdd->rollBack();
-                    $result = array(
-                        "Texte_rapport" => "Erreur: Cette commande est liée à un ou plusieurs colis. Veuillez d'abord supprimer les colis associés.",
-                        "retour_validation" => "non",
-                        "retour_lien" => ""
-                    );
-                    echo json_encode($result);
-                    exit;
-                }
-
-                // Create a record in the history table before deletion
-                $now = time();
-                $history_sql = $bdd->prepare("INSERT INTO admin_commandes_historique
-                (
-                    id_commande, 
-                    id_membre,
-                    pseudo,
-                    date,
-                    action
-                )
-                VALUES (?,?,?,?,?)");
-
-                $history_sql->execute(array(
-                    $id,
-                    $id_oo,
-                    $user,
-                    $now,
-                    'suppression'
-                ));
-
-                // Delete related records first (foreign key constraints)
-                // Delete transaction records
-                $delete_transactions = $bdd->prepare("DELETE FROM membres_transactions_commande WHERE id_commande = ?");
-                $delete_transactions->execute(array($id));
-
-                // Delete order items
-                $delete_items = $bdd->prepare("DELETE FROM membres_commandes_details  WHERE commande_id = ?");
-                $delete_items->execute(array($id));
-
-                // Delete order
-                $delete_sql = $bdd->prepare("DELETE FROM membres_commandes WHERE id = ?");
-                $delete_sql->execute(array($id));
-
-                // Commit transaction
-                $bdd->commit();
-
-                // Return success response
-                $result = array(
-                    "Texte_rapport" => "La commande a été supprimée avec succès.",
-                    "retour_validation" => "ok",
-                    "retour_lien" => ""
-                );
-            } else {
-                $bdd->rollBack();
-                $result = array(
-                    "Texte_rapport" => "Erreur: La commande n'existe pas.",
-                    "retour_validation" => "non",
-                    "retour_lien" => ""
-                );
-            }
-        } catch (Exception $e) {
-            $bdd->rollBack();
-            $result = array(
-                "Texte_rapport" => "Erreur lors de la suppression: " . $e->getMessage(),
-                "retour_validation" => "non",
-                "retour_lien" => ""
-            );
-        }
-    } else {
-        $result = array(
-            "Texte_rapport" => "Erreur: ID de commande non valide.",
-            "retour_validation" => "non",
-            "retour_lien" => ""
+        $sql_select->execute(
+            array(
+                intval($id)
+            )
         );
-    }
+        $commande = $sql_select->fetch();
+        $sql_select->closeCursor();
+        
+        $sql_delete = $bdd->prepare("DELETE FROM membres_commandes_details WHERE commande_id=?");
+        $sql_delete->execute(array($commande['id']));
+        $sql_delete->closeCursor();
 
-    // Return JSON response
-    echo json_encode($result);
+        $sql_delete = $bdd->prepare("DELETE FROM membres_panier_details WHERE numero_panier=?");
+        $sql_delete->execute(array($commande['panier_id']));
+        $sql_delete->closeCursor();
+
+        $sql_delete = $bdd->prepare("DELETE FROM membres_panier WHERE id=?");
+        $sql_delete->execute(array($commande['panier_id']));
+        $sql_delete->closeCursor();
+
+        $sql_delete = $bdd->prepare("DELETE FROM membres_commandes WHERE id=?");
+        $sql_delete->execute(array($id));
+        $sql_delete->closeCursor();
+        
+        $result = array("Texte_rapport" => "Commande supprimé!", "retour_validation" => "ok", "retour_lien" => "");
+    }else{
+        $result = array("Texte_rapport" => "Erreur", "retour_validation" => "non", "retour_lien" => "");
+    }
+    
+    $result = json_encode($result);
+    echo $result;
 } else {
-    // Redirect if not logged in
     header('location: /index.html');
 }
 

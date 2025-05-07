@@ -6,7 +6,7 @@ require_once('../../../Configurations.php');
 require_once('../../../Configurations_modules.php');
 
 ////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction = "../../../";
+$dir_fonction = "../../";
 require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
 
 $lasturl = $_SERVER['HTTP_REFERER'];
@@ -27,102 +27,72 @@ $lasturl = $_SERVER['HTTP_REFERER'];
  * Copyright ... Tous droits réservés auteur (Fabien B)*
   \*****************************************************/
 
-// Check if user is logged in
+$id = $_POST['id'];
+
 if (isset($user)) {
-    // Get order ID and new price from POST data
-    $id_commande = isset($_POST['id_commande']) ? intval($_POST['id_commande']) : 0;
-    $nouveau_prix = isset($_POST['nouveau_prix']) ? floatval($_POST['nouveau_prix']) : 0;
-    $motif = isset($_POST['motif']) ? htmlspecialchars($_POST['motif']) : '';
-    $now = time();
+    if(isset($id)){
 
-    if ($id_commande > 0 && $nouveau_prix >= 0) {
-        try {
-            // Begin transaction for data integrity
-            $bdd->beginTransaction();
+        $sous_total_reel = 0;
+        $req_boucle = $bdd->prepare("SELECT * FROM membres_commandes_details WHERE commande_id=? AND (annule != 'oui' OR annule is null) AND (disponibilite != 'Non disponible' OR disponibilite is null) ORDER BY id DESC");
+        $req_boucle->execute(array($id));
+        while ($ligne_boucle = $req_boucle->fetch()) {
 
-            // Check if the order exists and get current price
-            $check_order = $bdd->prepare("SELECT id, prix_total FROM membres_commandes WHERE id = ?");
-            $check_order->execute(array($id_commande));
-
-            if ($row_order = $check_order->fetch(PDO::FETCH_ASSOC)) {
-                $old_prix = floatval($row_order['prix_total']);
-
-                // Update order with new price
-                $update_order = $bdd->prepare("UPDATE membres_commandes SET 
-                    prix_total = ?,
-                    prix_ajuste = 1
-                    WHERE id = ?");
-
-                $update_order->execute(array(
-                    $nouveau_prix,
-                    $id_commande
-                ));
-
-                // Record price change in history
-                $details = "Modification du prix: " . number_format($old_prix, 2) . " € → " . number_format($nouveau_prix, 2) . " €";
-                if (!empty($motif)) {
-                    $details .= " | Motif: " . $motif;
-                }
-
-                $history_sql = $bdd->prepare("INSERT INTO admin_commandes_historique
-                (
-                    id_commande, 
-                    id_membre,
-                    pseudo,
-                    date,
-                    action,
-                    details
-                )
-                VALUES (?,?,?,?,?,?)");
-
-                $history_sql->execute(array(
-                    $id_commande,
-                    $id_oo,
-                    $user,
-                    $now,
-                    'price_change',
-                    $details
-                ));
-
-                // Commit transaction
-                $bdd->commit();
-
-                // Return success response
-                $result = array(
-                    "Texte_rapport" => "Le prix de la commande a été mis à jour avec succès",
-                    "retour_validation" => "ok",
-                    "retour_lien" => "",
-                    "old_price" => $old_prix,
-                    "new_price" => $nouveau_prix
-                );
-            } else {
-                $bdd->rollBack();
-                $result = array(
-                    "Texte_rapport" => "Erreur: La commande n'existe pas.",
-                    "retour_validation" => "non",
-                    "retour_lien" => ""
-                );
+            if(!empty($ligne_boucle['prix_reel'])){
+                $prix_reel = round($ligne_boucle['prix_reel'] * 0.00152449, 2) * $ligne_boucle['quantite'];
+            }else{
+                $prix_reel = round($ligne_boucle['prix'] * 0.00152449, 2) * $ligne_boucle['quantite'];
             }
-        } catch (Exception $e) {
-            $bdd->rollBack();
-            $result = array(
-                "Texte_rapport" => "Erreur lors de la modification du prix: " . $e->getMessage(),
-                "retour_validation" => "non",
-                "retour_lien" => ""
-            );
-        }
-    } else {
-        $result = array(
-            "Texte_rapport" => "Erreur: ID de commande ou prix non valide.",
-            "retour_validation" => "non",
-            "retour_lien" => ""
-        );
-    }
 
-    // Return JSON response
-    echo json_encode($result);
+            $sous_total_reel = $sous_total_reel + $prix_reel;
+            //var_dump($sous_total_reel);
+        }
+        $req_boucle->closeCursor();
+
+        $sous_total_reel = round($sous_total_reel / 0.00152449);
+
+        $req_select = $bdd->prepare("SELECT * FROM membres_commandes WHERE id=?");
+        $req_select->execute(array($id));
+        $ligne_select2 = $req_select->fetch();
+        $req_select->closeCursor();
+
+        if(!empty($ligne_select2['prix_total_reel'])){
+            $prix_total = $ligne_select2['prix_total_reel'];
+        }else{
+            $prix_total = $ligne_select2['prix_total'];
+        }
+
+        if(!empty($ligne_select2['sous_total_reel'])){
+            $sous_total = $ligne_select2['sous_total_reel'];
+        }else{
+            $sous_total = $ligne_select2['sous_total'];
+        }
+
+        $prix_total_reel = ($prix_total - $sous_total) + $sous_total_reel;
+
+        
+
+        $sql_update = $bdd->prepare("UPDATE membres_commandes SET
+        sous_total_reel = ?,
+        prix_total_reel = ?
+        WHERE id=?");
+
+        $sql_update->execute(
+            array(
+                $sous_total_reel,
+                $prix_total_reel,
+                intval($id)
+            )
+        );
+        $sql_update->closeCursor();
+
+        $result = array("Texte_rapport" => "Modifié!", "retour_validation" => "ok", "retour_lien" => "");
+    }else{
+        $result = array("Texte_rapport" => "Erreur", "retour_validation" => "non", "retour_lien" => "");
+    }
+    
+    $result = json_encode($result);
+    echo $result;
 } else {
-    // Redirect if not logged in
     header('location: /index.html');
 }
 

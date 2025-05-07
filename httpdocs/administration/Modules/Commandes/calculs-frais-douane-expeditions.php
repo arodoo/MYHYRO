@@ -1,165 +1,164 @@
 <?php
-ob_start();
-////INCLUDES CONFIGURATIONS CMS CODI ONE
-require_once('../../../Configurations_bdd.php');
-require_once('../../../Configurations.php');
-require_once('../../../Configurations_modules.php');
 
-////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction = "../../../";
-require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
+//////////////////////////////////////////PASSAGE COMMANDE ET COLIS
+//////////////////////////////////////////CALCULS DE TOUS LES FRAIS POUR AJOUTER AUX COMMANDES
 
-$lasturl = $_SERVER['HTTP_REFERER'];
+unset($_SESSION['prix_prospection_total']);
+unset($_SESSION['prix_frais_de_gestion_total']);
 
-/*****************************************************\
- * Adresse e-mail => direction@codi-one.fr             *
- * La conception est assujettie à une autorisation     *
- * spéciale de codi-one.com. Si vous ne disposez pas de*
- * cette autorisation, vous êtes dans l'illégalité.    *
- * L'auteur de la conception est et restera            *
- * codi-one.fr                                         *
- * Codage, script & images (all contenu) sont réalisés * 
- * par codi-one.fr                                     *
- * La conception est à usage unique et privé.          *
- * La tierce personne qui utilise le script se porte   *
- * garante de disposer des autorisations nécessaires   *
- *                                                     *
- * Copyright ... Tous droits réservés auteur (Fabien B)*
-  \*****************************************************/
 
-// Check if user is logged in
-if (isset($user)) {
-    // Get parameters from POST
-    $pays = isset($_POST['pays']) ? htmlspecialchars($_POST['pays']) : '';
-    $poids = isset($_POST['poids']) ? floatval($_POST['poids']) : 0;
-    $valeur = isset($_POST['valeur']) ? floatval($_POST['valeur']) : 0;
-    $mode_expedition = isset($_POST['mode_expedition']) ? htmlspecialchars($_POST['mode_expedition']) : '';
+	unset($_SESSION['prix_expedition_total2']);
 
-    // Initialize result array
-    $result = array();
 
-    try {
-        // Calculate shipping costs based on weight, destination and shipping method
-        $frais_expedition = 0;
-        $frais_douane = 0;
-        $tva_import = 0;
-        $message_info = '';
+	unset($_SESSION['prix_expedition_colis_total2']);
 
-        // Validate inputs
-        if (empty($pays)) {
-            throw new Exception("Pays de destination non spécifié");
-        }
 
-        if ($poids <= 0) {
-            throw new Exception("Poids non valide");
-        }
-
-        // Get country information from database
-        $sql_pays = $bdd->prepare("SELECT * FROM pays_liste WHERE code = ? OR nom = ? LIMIT 1");
-        $sql_pays->execute(array($pays, $pays));
-        $pays_info = $sql_pays->fetch(PDO::FETCH_ASSOC);
-
-        if (!$pays_info) {
-            throw new Exception("Pays non trouvé dans la base de données");
-        }
-
-        $zone_geo = $pays_info['zone_geo'];
-        $is_eu = $pays_info['is_eu'] == 1;
-
-        // Get shipping rates based on zone, weight and method
-        $sql_tarifs = $bdd->prepare("SELECT * FROM expedition_tarifs 
-                                    WHERE zone_geo = ? 
-                                    AND poids_min <= ? 
-                                    AND poids_max >= ?
-                                    AND mode = ?
-                                    LIMIT 1");
-
-        $sql_tarifs->execute(array($zone_geo, $poids, $poids, $mode_expedition));
-        $tarif = $sql_tarifs->fetch(PDO::FETCH_ASSOC);
-
-        if (!$tarif) {
-            // Try to find a default rate
-            $sql_tarifs = $bdd->prepare("SELECT * FROM expedition_tarifs 
-                                        WHERE zone_geo = ? 
-                                        AND poids_min <= ? 
-                                        AND mode = 'standard'
-                                        ORDER BY poids_max ASC
-                                        LIMIT 1");
-
-            $sql_tarifs->execute(array($zone_geo, $poids));
-            $tarif = $sql_tarifs->fetch(PDO::FETCH_ASSOC);
-
-            if (!$tarif) {
-                $message_info = "Aucun tarif trouvé pour cette destination et ce poids";
-                // Set a default value
-                $frais_expedition = $poids * 15; // 15€ per kg as fallback
-            } else {
-                $frais_expedition = $tarif['tarif'];
-                $message_info = "Tarif standard appliqué";
-            }
-        } else {
-            $frais_expedition = $tarif['tarif'];
-        }
-
-        // Calculate customs fees for non-EU countries
-        if (!$is_eu && $valeur > 0) {
-            // Get customs rate from database or use default
-            $sql_douane = $bdd->prepare("SELECT * FROM douane_tarifs WHERE pays = ? LIMIT 1");
-            $sql_douane->execute(array($pays));
-            $douane_info = $sql_douane->fetch(PDO::FETCH_ASSOC);
-
-            if ($douane_info) {
-                $taux_douane = $douane_info['taux_douane'];
-                $taux_tva = $douane_info['taux_tva'];
-            } else {
-                // Default rates
-                $taux_douane = 4.5; // 4.5%
-                $taux_tva = 20;  // 20%
-            }
-
-            // Calculate customs fees
-            $frais_douane = $valeur * ($taux_douane / 100);
-
-            // Calculate import VAT (on value + customs fees)
-            $tva_import = ($valeur + $frais_douane) * ($taux_tva / 100);
-
-            $message_info = "Frais de douane et TVA à l'import calculés pour pays hors UE";
-        } elseif ($is_eu) {
-            $message_info = "Pays membre de l'UE - Pas de frais de douane";
-        }
-
-        // Round values to 2 decimals
-        $frais_expedition = round($frais_expedition, 2);
-        $frais_douane = round($frais_douane, 2);
-        $tva_import = round($tva_import, 2);
-        $total = round($frais_expedition + $frais_douane + $tva_import, 2);
-
-        // Prepare result
-        $result = array(
-            "retour_validation" => "ok",
-            "frais_expedition" => $frais_expedition,
-            "frais_douane" => $frais_douane,
-            "tva_import" => $tva_import,
-            "total_frais" => $total,
-            "pays" => $pays_info['nom'],
-            "is_eu" => $is_eu,
-            "zone_geo" => $zone_geo,
-            "message" => $message_info
-        );
-
-    } catch (Exception $e) {
-        $result = array(
-            "retour_validation" => "non",
-            "message" => "Erreur lors du calcul des frais: " . $e->getMessage()
-        );
-    }
-
-    // Return JSON response
-    echo json_encode($result);
-} else {
-    // Redirect if not logged in
-    header('location: /index.html');
+if(empty($Abonnement_id)){
+	$Abonnement_id = 1;
 }
 
-ob_end_flush();
+///////////////////////////////SELECT ABONNEMENT
+$req_select = $bdd->prepare("SELECT * FROM configurations_abonnements WHERE id=?");
+$req_select->execute(array($Abonnement_id));
+$abonnement = $req_select->fetch();
+$req_select->closeCursor();
+$abonnement_id = $ligne_select['id'];
+
+///////////////////////////////SELECT BOUCLE
+$req_boucle = $bdd->prepare("SELECT * FROM membres_panier_details WHERE id_membre=? ORDER BY id ASC");
+$req_boucle->execute(array($id_oo));
+while ($ligne_boucle = $req_boucle->fetch()) {
+
+	///////////////////////////////COMMANDES & COMMANDES SOUHAITS
+	if($ligne_boucle['action_module_service_produit'] == "Commande" || $ligne_boucle['action_module_service_produit'] == "Commande souhait" || $ligne_boucle['action_module_service_produit'] == "Commande boutique"){
+	
+		///////////////////////////////Frais de gestion d'une commande
+		if ($abonnement['Frais_de_gestion_d_une_commande'] == "Gratuit") {
+			$prix_frais_de_gestion = 0;
+		}else{
+			$prix_frais_de_gestion = $abonnement['Frais_de_gestion_d_une_commande'];
+		} 
+		
+		$prix_frais_de_gestion_total = ($prix_frais_de_gestion);
+		
+		$_SESSION['prix_frais_de_gestion_total'] = $prix_frais_de_gestion_total;
+		//echo "Frais gestion : $prix_frais_de_gestion | Total $prix_frais_de_gestion_total <br />";
+
+	}
+
+	///////////////////////////////COMMANDES SOUHAITS
+	if($ligne_boucle['action_module_service_produit'] == "Commande souhait" ){
+
+		///////////////////////////////Liste de souhaits (prospection)
+		if ($abonnement['Liste_de_souhaits'] == "Gratuit") {
+			$prix_prospection = 0;
+		}else{
+			$prix_prospection = $abonnement['Liste_de_souhaits'];
+		} 
+		$prix_prospection_total = ($prix_prospection_total+$prix_prospection);
+		$_SESSION['prix_prospection_total'] = $prix_prospection_total;
+		//echo "Frais liste de souhait : $prix_prospection | Total $prix_prospection_total <br />";
+
+	}
+	if($_SESSION['prix_expedition_total'] != '0'){
+	///////////////////////////////COMMANDES & COMMANDES SOUHAITS
+	if($ligne_boucle['action_module_service_produit'] == "Commande" || $ligne_boucle['action_module_service_produit'] == "Commande souhait" || $ligne_boucle['action_module_service_produit'] == "Commande boutique" ){
+	
+		///////////////////////////////Douane et transport commande normale
+		$req_select = $bdd->prepare("SELECT * FROM categories WHERE nom_categorie=?");
+		$req_select->execute(array($ligne_boucle['categorie']));
+		$categorie = $req_select->fetch();
+		$req_select->closeCursor();
+		$prix_expedition = (($ligne_boucle['quantite']*$ligne_boucle['PU_HT'])*($categorie['value_commande']/100)); //$ligne_boucle['quantite']*
+		$prix_expedition = round($prix_expedition,0);
+		$prix_expedition_total = ($prix_expedition_total+$prix_expedition);
+
+		$_SESSION['prix_expedition_total'] = $prix_expedition_total;
+		$_SESSION['prix_expedition_total2'] = $prix_expedition_total;
+		//echo "Frais expédition commande : $prix_expedition | Total $prix_expedition_total <br />";
+
+	}
+	}
+	if($_SESSION['prix_expedition_colis_total'] != '0'){
+	///////////////////////////////COLIS
+	if($ligne_boucle['action_module_service_produit'] == "Commande colis" ){
+		
+		$prix_expedition_colis_total = $ligne_boucle['TTC_colis'];
+		$_SESSION['prix_expedition_colis_total'] = $prix_expedition_colis_total;
+		$_SESSION['prix_expedition_colis_total2'] = $prix_expedition_colis_total;
+		//echo "Frais expédition colis : $prix_expedition_colis | Total $prix_expedition_colis_total <br />";
+	}
+	}
+
+}
+$req_boucle->closeCursor();
+
+	//Total tout compris
+	//var_dump($prix_prospection_total,$prix_frais_de_gestion_total,$prix_expedition_total,$prix_expedition_colis_total);
+	$prix_total_frais_expedition_HT = ($prix_prospection_total+$prix_frais_de_gestion_total);
+	$prix_total_frais_expedition_TTC = ($prix_total_frais_expedition_HT*1.18);
+	$prix_total_frais_expedition_TTC = round($prix_total_frais_expedition_TTC,2);
+	$prix_total_frais_expedition_TVA = ($prix_total_frais_expedition_TTC-$prix_total_frais_expedition_HT);
+	$prix_total_frais_expedition_TVA = round($prix_total_frais_expedition_TVA, 2);
+	//echo "HT $prix_total_frais_expedition_HT TVA $prix_total_frais_expedition_TVA TTC $prix_total_frais_expedition_TTC <br />";
+
+///////////////////////////////////////////////////////AJOUT AU PANIER
+
+	///////////////////////////////DELETE PANIER DETAILS FRAIS 
+	//$sql_delete = $bdd->prepare("DELETE FROM membres_panier_details WHERE action_module_service_produit=? AND pseudo=?");
+	//$sql_delete->execute(array("Frais gestion de commande",$user));                     
+	//$sql_delete->closeCursor();
+
+	//$sql_delete = $bdd->prepare("DELETE FROM membres_panier_details WHERE action_module_service_produit=? AND pseudo=?");
+	//$sql_delete->execute(array("Frais liste souhait",$user));                     
+	//$sql_delete->closeCursor();
+
+	//$sql_delete = $bdd->prepare("DELETE FROM membres_panier_details WHERE action_module_service_produit=? AND pseudo=?");
+	//$sql_delete->execute(array("Frais expédition commande",$user));                     
+	//$sql_delete->closeCursor();
+
+	//$sql_delete = $bdd->prepare("DELETE FROM membres_panier_details WHERE action_module_service_produit=? AND pseudo=?");
+	//$sql_delete->execute(array("Frais expédition colis",$user));                     
+	//$sql_delete->closeCursor();
+
+	///////////////////////////////INSERT PANIER DETAILS FRAIS 
+	if(!empty($_SESSION['prix_frais_de_gestion_total'])){
+		//$libelle_tva_article = ($_SESSION['prix_frais_de_gestion_total']*1.20);
+		//$libelle_tva_article = ($libelle_tva_article-$_SESSION['prix_frais_de_gestion_total']);
+		//ajout_panier("Frais gestion de commande", 1, $_SESSION['prix_frais_de_gestion_total'], $libelle_tva_article, "1.20", "Frais gestion de commande", "", $libelle_id_article, $user);
+	}
+	if(!empty($_SESSION['prix_prospection_total'])){
+		//$libelle_tva_article = ($_SESSION['prix_frais_de_gestion_total']*1.20);
+		//$libelle_tva_article = ($libelle_tva_article-$_SESSION['prix_frais_de_gestion_total']);
+		//ajout_panier("Frais liste souhait", 1, $_SESSION['prix_frais_de_gestion_total'], $libelle_tva_article, "1.20", "Frais liste souhait", "", $libelle_id_article, $user);	
+	}
+	if(!empty($_SESSION['prix_expedition_total'])){
+		//$libelle_tva_article = ($_SESSION['prix_frais_de_gestion_total']*1.20);
+		//$libelle_tva_article = ($libelle_tva_article-$_SESSION['prix_frais_de_gestion_total']);
+		//ajout_panier("Frais expédition commande", 1, $_SESSION['prix_frais_de_gestion_total'], $libelle_tva_article, "1.20", "Frais expédition commande", "", $libelle_id_article, $user);		
+	}
+	if(!empty($_SESSION['prix_expedition_colis_total'])){
+		//$libelle_tva_article = ($_SESSION['prix_frais_de_gestion_total']*1.20);
+		//$libelle_tva_article = ($libelle_tva_article-$_SESSION['prix_frais_de_gestion_total']);
+		//ajout_panier("Frais expédition colis", 1, $_SESSION['prix_frais_de_gestion_total'], $libelle_tva_article, "1.20", "Frais expédition colis", "", $libelle_id_article, $user);		
+	}
+	
+	///////////////////////////////UPDATE PANIER GENERALE
+	$sql_update = $bdd->prepare("UPDATE membres_panier SET
+	  	prix_frais_de_gestion_total=?,
+		prix_prospection_total=?,
+		prix_expedition_total=?,
+		prix_expedition_colis_total=?
+	WHERE id_membre=?");
+	$sql_update->execute(array(
+		$_SESSION['prix_frais_de_gestion_total'],
+		$_SESSION['prix_prospection_total'],
+		$_SESSION['prix_expedition_total'],
+		$_SESSION['prix_expedition_colis_total'],
+		$id_oo
+	));                     
+	$sql_update->closeCursor();
+
+///////////////////////////////////////////////////////AJOUT AU PANIER
+
 ?>
