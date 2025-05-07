@@ -21,117 +21,161 @@ if (
     isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 2 ||
     isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 3
 ) {
+    ?>
+    <div class="sa-app__content">
+        <!-- sa-app__body -->
+        <div id="top" class="sa-app__body">
+            <div class="mx-sm-2 px-2 px-sm-3 px-xxl-4 pb-6">
+                <div class="container container--max--xl">
+                    <div class="py-5">
+                        <div class="row g-4 align-items-center">
+                            <div class="col">
+                                <nav class="mb-2" aria-label="breadcrumb">
+                                    <ol class="breadcrumb breadcrumb-sa-simple">
+                                        <li class="breadcrumb-item"><a
+                                                href="<?php echo $mode_back_lien_interne; ?>">Administration</a></li>
+                                        <?php if (empty($_GET['action'])) { ?>
+                                            <li class="breadcrumb-item active" aria-current="page">Commandes</li>
+                                        <?php } else { ?>
+                                            <li class="breadcrumb-item"><a href="?page=Commandes">Commandes</a></li>
+                                            <?php if ($_GET['action'] == "Details") { ?>
+                                                <li class="breadcrumb-item active" aria-current="page">Détails</li>
+                                            <?php } ?>
+                                        <?php } ?>
+                                    </ol>
+                                </nav>
+                                <h1 class="h3 m-0">Gestion des commandes</h1>
+                            </div>
+                            <div class="col-auto d-flex">
+                                <?php if (isset($_GET['action'])) { ?>
+                                    <a href="?page=Commandes" class="btn btn-primary">Liste des commandes</a>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
 
-?>
-
-    <script>
-        $(document).ready(function() {
-
-            //AJAX SOUMISSION DU FORMULAIRE - MODIFIER 
-            $(document).on("click", "#modifier-compte-membre", function() {
-                $.post({
-                    url: '/administration/Modules/Membres-logs/membres-logs-action-modifier-ajax.php',
-                    type: 'POST',
-                    data: new FormData($("#formulaire-modifier-compte-membre")[0]),
-                    processData: false,
-                    contentType: false,
-                    dataType: "json",
-                    success: function(res) {
-                        if (res.retour_validation == "ok") {
-                            popup_alert(res.Texte_rapport, "green filledlight", "#009900", "uk-icon-check");
-                        } else {
-                            popup_alert(res.Texte_rapport, "#CC0000 filledlight", "#CC0000", "uk-icon-times");
+                    <script>
+                        // Make listeCommandes accessible globally
+                        window.listeCommandes = function () {
+                            $.post({
+                                url: '/administration/Modules/Commandes/Commandes-action-liste-ajax.php',
+                                type: 'POST',
+                                data: {
+                                    idmembre: "<?php echo $_GET['idmembre'] ? $_GET['idmembre'] : ""; ?>"
+                                },
+                                dataType: "html",
+                                success: function (res) {
+                                    $("#liste-commandes").html(res);
+                                    initializeDataTables();
+                                }
+                            });
                         }
+
+                        // Initialize DataTables with proper styling
+                        function initializeDataTables() {
+                            if ($.fn.DataTable.isDataTable('.sa-datatables-init')) {
+                                $('.sa-datatables-init').DataTable().destroy();
+                            }
+
+                            setTimeout(function () {
+                                const template =
+                                    '<"sa-datatables"' +
+                                    '<"sa-datatables__table"t>' +
+                                    '<"sa-datatables__footer"' +
+                                    '<"sa-datatables__pagination"p>' +
+                                    '<"sa-datatables__controls"' +
+                                    '<"sa-datatables__legend"i>' +
+                                    '<"sa-datatables__divider">' +
+                                    '<"sa-datatables__page-size"l>' +
+                                    '>' +
+                                    '>' +
+                                    '>';
+
+                                $('.sa-datatables-init').each(function () {
+                                    const table = $(this).DataTable({
+                                        dom: template,
+                                        paging: true,
+                                        ordering: true,
+                                        info: true,
+                                        language: {
+                                            search: "",
+                                            searchPlaceholder: "Rechercher...",
+                                            lengthMenu: "Afficher _MENU_ éléments",
+                                            info: "Affichage de l'élément _START_ à _END_ sur _TOTAL_ éléments",
+                                            infoEmpty: "Affichage de l'élément 0 à 0 sur 0 élément",
+                                            infoFiltered: "(filtré de _MAX_ éléments au total)",
+                                            paginate: {
+                                                first: "Premier",
+                                                previous: "Précédent",
+                                                next: "Suivant",
+                                                last: "Dernier"
+                                            }
+                                        },
+                                        drawCallback: function () {
+                                            $(this).find('.pagination').addClass('pagination-sm');
+                                        }
+                                    });
+
+                                    const searchSelector = $(this).data('sa-search-input');
+                                    if (searchSelector) {
+                                        $(searchSelector).off('input').on('input', function () {
+                                            table.search(this.value).draw();
+                                        });
+
+                                        $(searchSelector).off('keypress.prevent-form-submit').on('keypress.prevent-form-submit', function (e) {
+                                            return e.which !== 13;
+                                        });
+                                    }
+                                });
+                            }, 10);
+                        }
+
+                        $(document).ready(function () {
+                            listeCommandes();
+                        });
+                    </script>
+
+                    <?php
+                    $action = $_GET['action'] ?? '';
+                    $idaction = $_GET['idaction'] ?? '';
+
+                    if ($action == "Details") {
+                        ?>
+                        <div id="details-commande">
+                            <!-- Content will be loaded via AJAX -->
+                            <script>
+                                $.post({
+                                    url: '/administration/Modules/Commandes/Commandes-action-details-ajax.php',
+                                    type: 'POST',
+                                    data: {
+                                        idaction: "<?php echo $_GET['idaction']; ?>"
+                                    },
+                                    dataType: "html",
+                                    success: function (res) {
+                                        $("#details-commande").html(res);
+                                        initializeDataTables();
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <?php
+                    } else {
+                        ?>
+                        <div class="card">
+                            <div class="card-body" id="liste-commandes">
+                                <!-- Content will be loaded via AJAX -->
+                            </div>
+                        </div>
+                        <?php
                     }
-                });
-                listeCommandes();
-            });
-
-            //FUNCTION AJAX - LISTE NEWSLETTER
-            function listeCommandes() {
-                $.post({
-                    url: '/administration/Modules/Commandes/Commandes-action-liste-ajax.php',
-                    type: 'POST',
-                    data: {
-                        idmembre: "<?php echo $_GET['idmembre']; ?>"
-                    },
-                    dataType: "html",
-                    success: function(res) {
-                        $("#liste-commandes").html(res);
-                    }
-                });
-            }
-
-            listeCommandes();
-
-        });
-    </script>
-
+                    ?>
+                </div>
+            </div>
+        </div>
+        <!-- sa-app__body / end -->
+    </div>
     <?php
-
-    $action = $_GET['action'];
-    $idaction = $_GET['idaction'];
-    ?>
-
-    <ol class="breadcrumb">
-        <li><a href="<?php echo $http; ?><?php echo $nomsiteweb; ?>">Accueil</a></li>
-        <li><a href="<?php echo $mode_back_lien_interne; ?>">Administration</a></li>
-        <?php if (empty($_GET['action'])) { ?> <li class="active">Commandes</li> <?php } else { ?> <li><a href="?page=Commandes">Commandes</a></li> <?php } ?>
-        <?php if ($_GET['action'] == "modifier") { ?> <li class="active">Consultation</li> <?php } ?>
-        <?php if ($_GET['action'] == "addm") { ?> <li class="active">Ajouter</li> <?php } ?>
-    </ol>
-
-    <?php
-    echo "<div id='bloctitre' style='text-align: left;'><h1>Commandes</h1></div><br />
-<div style='clear: both;'></div>";
-
-    ////////////////////Boutton administration
-    echo "<a href='" . $mode_back_lien_interne . "'><button type='button' class='btn btn-default' style='margin-right: 5px;' ><span class='uk-icon-cogs'></span> Administration</button></a>";
-    if (isset($_GET['action'])) {
-        echo "<a href='?page=Commandes'><button type='button' class='btn btn-success' style='margin-right: 5px;' ><span class='uk-icon-history'></span> Liste des commandes</button></a>";
-    }
-    echo "<div style='clear: both;'></div>";
-    ////////////////////Boutton administration
-    ?>
-
-    <div style='text-align: center;'>
-
-        <?php
-        ////////////////////////////////////////////////////////////////////////////////////////////FORMULAIRE AJOUTER - MODIFIER
-     
-        ///////////////////////////////////////////////////////////////////////////////////////////ACTION - DETAILS
-        if($action == "Details"){?>
-            <script>
-                $.post({
-                    url: '/administration/Modules/Commandes/Commandes-action-details-ajax.php',
-                    type: 'POST',
-                    data: {
-                        idaction: "<?php echo $_GET['idaction']; ?>"
-                    },
-                    dataType: "html",
-                    success: function(res) {
-                        $("#details-commande").html(res);
-                    }
-                });
-            </script>
-            <div id="details-commande" style="clear:both;"></div>
-        <?php }
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////PAS D'ACTION
-        if (!isset($action)) {
-        ?>
-
-            <div style='clear: both; margin-bottom: 20px;'></div>
-
-            <div id='liste-commandes' style='clear: both;'></div>
-
-    <?php
-            ////////////////////////////////////////////////////////////////////////////////////////////PAS D'ACTION
-        }
-
-        echo "</div>";
-    } else {
-        header('location: /index.html');
-    }
-    ?>
+} else {
+    header('location: /index.html');
+}
+?>
