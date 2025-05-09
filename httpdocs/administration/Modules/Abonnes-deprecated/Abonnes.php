@@ -612,6 +612,62 @@ $req_boucle->closeCursor();
                 </div>
             </div>
 
+            <!--table style='text-align: center; width: 100%;' cellpadding='2' cellspacing='2'>
+
+                <input id="idWish" style="display:none" disabled value="<?= $commande['id']; ?>"/>
+                <input id="idMembre" style="display:none" disabled value="<?= $commande['user_id']; ?>"/>
+
+                <tr>
+
+                    <td style='text-align: left; font-weight:bold'>
+                        <?php
+                        if (!empty($commande['id_paiement_pf'])) {
+                            if ($commande['id_paiement_pf'] == '2' || $commande['id_paiement_pf'] == '1' || $commande['id_paiement_pf'] == '4' || $commande['id_paiement_pf'] == '3') {
+
+                                echo $commande['dette_montant_pf'] ?> <select id='dette_payee_pf' name='dette_payee_pf'
+                                                                              class='form-control' style='width:50%'>
+                                    <option value='Payé' <?php if ($commande['dette_payee_pf'] == 'Payé') {echo 'selected';} ?>>Payé
+                                    </option>
+                                    <option value='Non payé' <?php if ($commande['dette_payee_pf'] == 'Non payé') {echo 'selected';} ?>>Non payé
+                                    </option>
+                                </select>
+                                <br>
+                                <?php echo $commande['dette_montant_pf2'] ?>
+                                <select id='dette_payee_pf2' name='dette_payee_pf2' class='form-control' style='width:50%'>
+                                    <option value='Payé' <?php if ($commande['dette_payee_pf2'] == 'Payé') {echo 'selected';} ?>>Payé</option>
+                                    <option value='Non payé' <?php if ($commande['dette_payee_pf2'] == 'Non payé') {echo 'selected';} ?>>Non payé</option>
+                                </select>
+                                <br>
+                                <?php
+
+                            } elseif ($commande['id_paiement_pf'] == '6' || $commande['id_paiement_pf'] == '5') {
+
+                                echo $commande['dette_montant_pf'] ?>
+
+                                <br>
+                                <?php echo $commande['dette_montant_pf2'] ?>
+                                <select id='dette_payee_pf2' name='dette_payee_pf2' class='form-control' style='width:50%'>
+                                    <option value='Payé' <?php if ($commande['dette_payee_pf2'] == 'Payé') {echo 'selected';} ?>>Payé</option>
+                                    <option value='Non payé' <?php if ($commande['dette_payee_pf2'] == 'Non payé') {echo 'selected';} ?>>Non payé</option>
+                                </select>
+                                <br>
+                                <?php echo $commande['dette_montant_pf3'] ?>
+                                <select id='dette_payee_pf3' name='dette_payee_pf3' class='form-control' style='width:50%'>
+                                    <option value='Payé' <?php if ($commande['dette_payee_pf3'] == 'Payé') {echo 'selected';} ?>>Payé</option>
+                                    <option value='Non payé' <?php if ($commande['dette_payee_pf3'] == 'Non payé') {echo 'selected';} ?>>Non payé</option>
+                                </select>
+                                <br>
+                                <?php
+                            }
+
+                        }
+                        ?>
+                    </td>
+
+                </tr>
+            </table-->
+
+
         </div>
         <div style="border-top: 1px solid #dddddd; padding: 2rem;">
             <h4 style="color: #ff9900; font-weight: bold;">NOTES</h4>
