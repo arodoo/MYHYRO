@@ -136,7 +136,6 @@ if (
 		</thead>
 		<tbody>
 			<?php
-			// Keep database query code as is
 			$req_boucle = $bdd->prepare("SELECT * FROM membres WHERE Abonnement_statut_demande IS NOT NULL ORDER BY id DESC");
 			$req_boucle->execute();
 			while ($ligne_boucle = $req_boucle->fetch()) {
@@ -183,7 +182,7 @@ if (
 					<td><?= $prenom ?> 		<?= $nom ?></td>
 					<td><?= $abonnement_name ?></td>
 					<td>
-						<span class="badge badge-sa-primary"><?= $statut_name ?></span>
+						<span class="badge bg-primary"><?= $statut_name ?></span>
 					</td>
 					<td><?= $abonnement_paye_demande ?></td>
 					<td>
