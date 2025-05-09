@@ -6,236 +6,226 @@ require_once('../../../Configurations.php');
 require_once('../../../Configurations_modules.php');
 
 ////INCLUDE FUNCTION HAUT CMS CODI ONE
-$dir_fonction= "../../../";
+$dir_fonction = "../../../";
 require_once('../../../function/INCLUDE-FUNCTION-HAUT-CMS-CODI-ONE.php');
 
 $lasturl = $_SERVER['HTTP_REFERER'];
 
-  /*****************************************************\
-  * Adresse e-mail => direction@codi-one.fr             *
-  * La conception est assujettie à une autorisation     *
-  * spéciale de codi-one.com. Si vous ne disposez pas de*
-  * cette autorisation, vous êtes dans l'illégalité.    *
-  * L'auteur de la conception est et restera            *
-  * codi-one.fr                                         *
-  * Codage, script & images (all contenu) sont réalisés * 
-  * par codi-one.fr                                     *
-  * La conception est à usage unique et privé.          *
-  * La tierce personne qui utilise le script se porte   *
-  * garante de disposer des autorisations nécessaires   *
-  *                                                     *
-  * Copyright ... Tous droits réservés auteur (Fabien B)*
-  \*****************************************************/
+/*****************************************************\
+ * Adresse e-mail => direction@codi-one.fr             *
+ * La conception est assujettie à une autorisation     *
+ * spéciale de codi-one.com. Si vous ne disposez pas de*
+ * cette autorisation, vous êtes dans l'illégalité.    *
+ * L'auteur de la conception est et restera            *
+ * codi-one.fr                                         *
+ * Codage, script & images (all contenu) sont réalisés * 
+ * par codi-one.fr                                     *
+ * La conception est à usage unique et privé.          *
+ * La tierce personne qui utilise le script se porte   *
+ * garante de disposer des autorisations nécessaires   *
+ *                                                     *
+ * Copyright ... Tous droits réservés auteur (Fabien B)*
+\*****************************************************/
 
-if(isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 1 ||
-isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 2 ||
-isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 3 ){
+if (
+	isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 1 ||
+	isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 2 ||
+	isset($_SESSION['7A5d8M9i4N9']) && isset($_SESSION['4M8e7M5b1R2e8s']) && isset($user) && $admin_oo == 3
+) {
+	?>
+	<div class="sa-datatables-header">
+		<div class="sa-datatables-header__title">
+			<h2>Liste des abonnés</h2>
+		</div>
+		<div class="sa-datatables-header__search">
+			<input type="text" placeholder="Recherche" class="form-control form-control--search" id="table-search">
+		</div>
+	</div>
 
-?>
+	<script>
+		$(document).ready(function () {
+			// Add modal HTML at the bottom of the page
+			$('body').append(`
+				<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="deleteConfirmModalLabel">Confirmer la suppression</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								Êtes-vous sûr de vouloir supprimer cet abonné ?
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+								<button type="button" class="btn btn-danger" id="confirmDelete">Supprimer</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			`);
 
-<div style='clear: both;'></div>
+			// Store the ID to delete
+			let idToDelete = null;
 
-<?php
-$nom_fichier = "Abonnes";
-$nom_fichier_datatable = "Abonnes-".date('d-m-Y', time())."-$nomsiteweb"; 
-?>
-<script>
-$(document).ready(function(){
-    $('#Tableau_a').DataTable(
-{
-responsive: true,
-stateSave: true,
-dom: 'Bftipr',
-"order": [],
-          buttons: [
-       {
-         extend: 'print',
-           text  : "Imprimer",
-                exportOptions: {
-                    columns: ':visible'
-                }
-          },
-          {
-           extend: 'pdf',
-           filename : "<?php echo "$nom_fichier_datatable"; ?>",
-           title : "<?php echo "$nom_fichier"; ?>",
-                exportOptions: {
-                    columns: ':visible'
-                }
-          },{
-          extend: 'csv',
-           filename : "<?php echo "$nom_fichier_datatable"; ?>",
-                exportOptions: {
-                    columns: ':visible'
-                }
-          },{
-          extend: 'colvis',
-	text  : "Colonnes visibles",
-          }
-             ],
-        columnDefs: [ {
-            visible: false
-       } ],
-  "columnDefs": [
-    { "orderable": false, "targets": 5, },
-  ],
-"language": {
-	"sProcessing":     "Traitement en cours...",
-	"sSearch":         "Rechercher&nbsp;:",
-    "sLengthMenu":     "Afficher _MENU_ &eacute;l&eacute;ments",
-	"sInfo":           "Affichage de l'&eacute;l&eacute;ment _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
-	"sInfoEmpty":      "Affichage de l'&eacute;l&eacute;ment 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
-	"sInfoFiltered":   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-	"sInfoPostFix":    "",
-	"sLoadingRecords": "Chargement en cours...",
-    "sZeroRecords":    "Aucun &eacute;l&eacute;ment &agrave; afficher",
-	"sEmptyTable":     "Aucune donn&eacute;e disponible dans le tableau",
-	"oPaginate": {
-		"sFirst":      "Premier",
-		"sPrevious":   "Pr&eacute;c&eacute;dent",
-		"sNext":       "Suivant",
-		"sLast":       "Dernier"
-	},
-	"oAria": {
-		"sSortAscending":  ": activer pour trier la colonne par ordre croissant",
-		"sSortDescending": ": activer pour trier la colonne par ordre d&eacute;croissant"
-	}
-}
-}
-);
+			// Delete action handler - open modal instead of browser confirm
+			$(document).on("click", "#deleteThis", function (e) {
+				e.preventDefault();
+				idToDelete = $(this).attr('data');
 
-///////////////CHAMPS DE RECHERCHE SUR COLONNE
-    $('#Tableau_a tfoot .search_table').each( function () {
-        var title = $(this).text();
-        $(this).html( '<input type="text" class="form-control" placeholder="'+title+'" style="width:100%; font-weight: normal;"/>' );
-    } );
-    var table = $('#Tableau_a').DataTable();
-    table.columns().every( function () {
-        var that = this;
-        $( 'input', this.footer() ).on( 'keyup change', function () {
-            if ( that.search() !== this.value ) {
-                that.search( this.value )
-                    .draw();
-            }
-        } );
-    } );
+				// Show the modal instead of browser confirm
+				var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+				deleteModal.show();
+			});
 
-});
-</script>
+			// Confirm delete button in modal
+			$(document).on("click", "#confirmDelete", function () {
+				if (idToDelete) {
+					$.post({
+						url: '/administration/Modules/Abonnes/Abonnes-action-supprimer-ajax.php',
+						type: 'POST',
+						data: { id: idToDelete },
+						success: function (res) {
+							res = JSON.parse(res);
+							if (res.retour_validation == "ok") {
+								// Hide the modal
+								bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
 
-	<table id='Tableau_a' class="display nowrap" style="text-align: center; width: 100%; margin-top: 15px;" cellpadding="2" cellspacing="2">
+								// Show success message
+								popup_alert(res.Texte_rapport, "green filledlight", "#009900", "fas fa-check");
 
-<thead>
-<tr>
-<th scope="col" style="text-align: center;">NOM PRENOM</th>
-<th style="text-align: center;" >ABONNEMENT</th>
-<th style="text-align: center;" >STATUT</th>
-<th style="text-align: center; width: 236px;" >MOYEN PAIEMENT</th>
-<th style="text-align: center; width: 236px;" >DATE DE PAIEMENT</th>
-<th style="text-align: center;" >EXPIRATION</th>
-<th  style="text-align: center;" >JOURS RESTANT</th>
-<th style="text-align: center; width: 90px;" >MODIFIER</th>
-</tr>
-</thead>
-<tfoot>
-<tr>
-<th class="search_table" style="text-align: center;">NOM PRENOM</th>
-<th class="search_table" style="text-align: center;" >ABONNEMENT</th>
-<th class="search_table" style="text-align: center;" >STATUT</th>
-<th class="search_table" style="text-align: center;width: 236px;" >MOYEN PAIEMENT</th>
-<th class="search_table" style="text-align: center; width: 236px;" >DATE DE PAIEMENT</th>
-<th class="search_table" style="text-align: center;" >EXPIRATION</th>
-<th class="search_table" style="text-align: center;" >JOURS RESTANT</th>
-<th style="text-align: center; width: 90px;" >MODIFIER</th>
-</tr>
-</tfoot>
-<tbody>
+								// Refresh the list
+								if (window.parent && window.parent.listeCompteMembre) {
+									window.parent.listeCompteMembre();
+								} else {
+									// Fallback if parent function isn't accessible
+									setTimeout(() => {
+										$.post({
+											url: '/administration/Modules/Abonnes/Abonnes-action-liste-ajax.php',
+											type: 'POST',
+											dataType: "html",
+											success: function (res) {
+												$("#liste-compte-membre", window.parent.document).html(res);
+											}
+										});
+									}, 1000);
+								}
+							} else {
+								// Show error message
+								popup_alert(res.Texte_rapport, "#CC0000 filledlight", "#CC0000", "fas fa-times");
+							}
+						}
+					});
+				}
+			});
+		});
+	</script>
 
-<?php
-	///////////////////////////////SELECT BOUCLE
-	$req_boucle = $bdd->prepare("SELECT * FROM membres ORDER BY Abonnement_dernier_demande_date DESC");
-	$req_boucle->execute();
-	while($ligne_boucle = $req_boucle->fetch()){
-	$idd = $ligne_boucle['id']; 
-  	$log = $ligne_boucle['pseudo'];
-  	$parrain = $ligne_boucle['numero_parrain'];
-	$email = $ligne_boucle['mail'];
-	$adm = $ligne_boucle['admin'];
-	$nomm = $ligne_boucle['nom'];
-	$prenomm = $ligne_boucle['prenom'];
-        $adressem = $ligne_boucle['adresse'];
-        $statut_compt = $ligne_boucle['statut_compte'];
-        $ActiverActiver = $ligne_boucle['Activer'];
-	$telephoneposportable = $ligne_boucle['Telephone_portable'];
-	$FH = $ligne_boucle['civilites'];
- 	$faxpost = $ligne_boucle['Fax'];
- 	$compte_bloque = $ligne_boucle['compte_bloque'];
- 	$demande_de_suppression = $ligne_boucle['demande_de_suppression'];
- 	$demande_de_suppression_date = $ligne_boucle['demande_de_suppression_date'];
- 	$datenaissance = date('d/m/Y', (int) $ligne_boucle['datenaissance']);
- 	$supprimer = $ligne_boucle['supprimer'];
- 	$supprimer_date = $ligne_boucle['supprimer_date'];
-	if(!empty($supprimer_date)){ $supprimer_date = date('d-m-Y', $supprimer_date); }
+	<table class="sa-datatables-init" data-order='[[ 0, "desc" ]]' data-sa-search-input="#table-search">
+		<thead>
+			<tr>
+				<th>NOM PRENOM</th>
+				<th>ABONNEMENT</th>
+				<th>STATUT</th>
+				<th>MOYEN PAIEMENT</th>
+				<th>DATE DE PAIEMENT</th>
+				<th>EXPIRATION</th>
+				<th>JOURS RESTANT</th>
+				<th>ACTIONS</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			// Keep database query code as is
+			$req_boucle = $bdd->prepare("SELECT * FROM membres WHERE Abonnement_statut_demande IS NOT NULL ORDER BY id DESC");
+			$req_boucle->execute();
+			while ($ligne_boucle = $req_boucle->fetch()) {
+				$id = $ligne_boucle['id'];
+				$nom = $ligne_boucle['nom'];
+				$prenom = $ligne_boucle['prenom'];
+				$abonnement_id = $ligne_boucle['Abonnement_id'];
+				$abonnement_paye = $ligne_boucle['Abonnement_paye'];
+				$abonnement_paye_demande = $ligne_boucle['Abonnement_paye_demande'];
+				$abonnement_date_paye = $ligne_boucle['Abonnement_date_paye'];
+				$abonnement_date_expiration = $ligne_boucle['Abonnement_date_expiration'];
+				$abonnement_statut_demande = $ligne_boucle['Abonnement_statut_demande'];
 
- 	$Abonnement_id = $ligne_boucle['Abonnement_id'];
- 	$Abonnement_date = $ligne_boucle['Abonnement_date'];
-	if(!empty($Abonnement_date)){ $Abonnement_date = date('d-m-Y', $Abonnement_date); }
- 	$Abonnement_date_expiration = $ligne_boucle['Abonnement_date_expiration'];
-	if(!empty($Abonnement_date_expiration)){ $Abonnement_date_expiration = date('d-m-Y', $Abonnement_date_expiration); }
- 	$Abonnement_mode_paye = $ligne_boucle['Abonnement_mode_paye'];
- 	$Abonnement_paye = $ligne_boucle['Abonnement_paye'];
-	if($Abonnement_paye == "oui"){
-		$Abonnement_paye = "<span class='label label-success' >Payé</span>";
-	}else{
-		$Abonnement_paye = "<span class='label label-danger' >Non payé</span>";
-	}
- 	$Abonnement_date_paye = $ligne_boucle['Abonnement_date_paye'];
-	if(!empty($Abonnement_date_paye)){
-		$Abonnement_date_paye = date('d-m-Y', $Abonnement_date_paye);
-		$Abonnement_date_paye = "<br /> $Abonnement_date_paye";
-	}
+				// Get abonnement name
+				$sql_select = $bdd->prepare("SELECT * FROM configurations_abonnements WHERE id=?");
+				$sql_select->execute(array($abonnement_id));
+				$ligne_abonnement = $sql_select->fetch();
+				$sql_select->closeCursor();
+				$abonnement_name = $ligne_abonnement ? $ligne_abonnement['nom_abonnement'] : 'Non défini';
 
-	if($ligne_boucle['Abonnement_date_expiration'] > time() ){
-		$nbr_jour_abonnement = ($ligne_boucle['Abonnement_date_expiration']-time());
-		if($nbr_jour_abonnement > 86400){
-			$nbr_jour_abonnement = ($nbr_jour_abonnement/86400);
-		}
-		$nbr_jour_abonnement = round($nbr_jour_abonnement);
-		if($nbr_jour_abonnement > 1){
-			$nbr_jour_abonnement = "$nbr_jour_abonnement Jours";
-		}else{
-			$nbr_jour_abonnement = "1 Jour";
-		}
-	}else{
-		$nbr_jour_abonnement = "0 Jours";
-	}
+				// Get status name
+				$sql_select = $bdd->prepare("SELECT * FROM configurations_suivi_achat WHERE id=?");
+				$sql_select->execute(array($abonnement_statut_demande));
+				$ligne_statut = $sql_select->fetch();
+				$sql_select->closeCursor();
+				$statut_name = $ligne_statut ? $ligne_statut['nom_suivi'] : 'Non défini';
 
-	///////////////////////////////SELECT
-	$req_select = $bdd->prepare("SELECT * FROM configurations_abonnements WHERE id=?");
-	$req_select->execute(array($Abonnement_id));
-	$ligne_select = $req_select->fetch();
-	$req_select->closeCursor();
-	$nom_abonnement = $ligne_select['nom_abonnement']; 
-	if(empty($nom_abonnement)){
-		$nom_abonnement = "<span class='label label-danger' >Pas d'abonnement</span>";
-	}
+				// Calculate remaining days
+				$nbr_jour_abonnement = "0 Jours";
+				if ($abonnement_date_expiration > time()) {
+					$nbr_jour_abonnement = ($abonnement_date_expiration - time());
+					if ($nbr_jour_abonnement > 86400) {
+						$nbr_jour_abonnement = ($nbr_jour_abonnement / 86400);
+					}
+					$nbr_jour_abonnement = round($nbr_jour_abonnement);
+					if ($nbr_jour_abonnement > 1) {
+						$nbr_jour_abonnement = "$nbr_jour_abonnement Jours";
+					} else {
+						$nbr_jour_abonnement = "1 Jour";
+					}
+				}
+				?>
+				<tr>
+					<td><?= $prenom ?> 		<?= $nom ?></td>
+					<td><?= $abonnement_name ?></td>
+					<td>
+						<span class="badge badge-sa-primary"><?= $statut_name ?></span>
+					</td>
+					<td><?= $abonnement_paye_demande ?></td>
+					<td>
+						<?php if ($abonnement_date_paye > 0): ?>
+							<?= date("d/m/Y", $abonnement_date_paye) ?>
+						<?php else: ?>
+							Non disponible
+						<?php endif; ?>
+					</td>
+					<td>
+						<?php if ($abonnement_date_expiration > 0): ?>
+							<?= date("d/m/Y", $abonnement_date_expiration) ?>
+						<?php else: ?>
+							Non disponible
+						<?php endif; ?>
+					</td>
+					<td><?= $nbr_jour_abonnement ?></td>
+					<td>
+						<div class="dropdown">
+							<button class="btn btn-sa-muted btn-sm" type="button" data-bs-toggle="dropdown"
+								aria-expanded="false" aria-label="More">
+								<i class="fas fa-ellipsis-v"></i>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li><a class="dropdown-item"
+										href="?page=Abonnes&action=Modifier&idaction=<?= $id ?>">Modifier</a></li>
+								<li><a class="dropdown-item text-danger" href="#" id="deleteThis"
+										data="<?= $id ?>">Supprimer</a></li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+				<?php
+			}
+			$req_boucle->closeCursor();
+			?>
+		</tbody>
+	</table>
 
-echo "<tr><td style='text-align: center;'>$prenomm $nomm($log)</td>";
-echo "<td style='text-align: center;'>N°$Abonnement_id $nom_abonnement</td>";
-echo "<td style='text-align: center;'>$Abonnement_paye </td>";
-echo "<td style='text-align: center;'> $Abonnement_date_paye </td>";
-echo "<td style='text-align: center;'> $Abonnement_date </td>";
-echo "<td style='text-align: center;'>$Abonnement_date_expiration</td>";
-echo "<td style='text-align: center;'>$nbr_jour_abonnement</td>";
-echo "<td style='text-align: center;'><a href='?page=Abonnes&amp;action=Modifier&amp;idaction=".$idd."' title='Modifier' data-id='".$idd."' ><span class='uk-icon-file-text' ></span></a></td>";
-echo "</tr>";
-}
-$req_boucle->closeCursor();
-
-echo '</tbody></table><br /><br />';
-
-}else{
-header('location: /index.html');
+	<?php
+} else {
+	header('location: /index.html');
 }
 
 ob_end_flush();
